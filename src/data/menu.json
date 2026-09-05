@@ -36,7 +36,7 @@
       "name": "Matcha[New Product]",
       "description": "Smooth ceremonial-grade matcha with milk, hot or iced.",
       "price": 35,
-      "image": "/images/products/Matcha.webp",
+      "image": "/images/products/matcha.webp",
       "available": true,
       "hasTemperature": false,
       "category": "Drinks",

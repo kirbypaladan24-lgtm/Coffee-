@@ -8,7 +8,6 @@ const fraunces = Fraunces({
   variable: "--font-fraunces",
   subsets: ["latin"],
   weight: ["500", "600", "700", "800", "900"],
-  opticalSizing: "auto",
 });
 
 const jakarta = Plus_Jakarta_Sans({

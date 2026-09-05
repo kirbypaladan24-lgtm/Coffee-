@@ -20,7 +20,7 @@ export function Hero({ settings }: { settings: BoothSettings }) {
 
         <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-secondary px-4 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-secondary-foreground">
           <Coffee className="h-3.5 w-3.5" aria-hidden />
-          SPECS School Booth · 3 Days Only
+          SPECS Booth · 3 Days Only
         </span>
 
         <div className="flex flex-col items-center gap-3">
@@ -32,7 +32,7 @@ export function Hero({ settings }: { settings: BoothSettings }) {
           </h1>
           <p className="max-w-xl text-balance text-base leading-relaxed text-muted-foreground sm:text-lg">
             Freshly brewed coffee, sweet treats &amp; a photo booth — order
-            ahead, show your QR, and skip the line.
+            ahead, show your QR, and your order is received.
           </p>
         </div>
 

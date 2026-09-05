@@ -123,7 +123,7 @@ export function OrderDialog({
           // serving temp — so the booth knows what the customer is getting.
           temperature: product!.hasTemperature
             ? temperature
-            : (product.defaultTemperature ?? null),
+            : (product!.defaultTemperature ?? null),
           quantity,
           price: product!.price,
           subtotal: product!.price * quantity,
@@ -212,7 +212,7 @@ export function OrderDialog({
             className="rounded-md border border-border bg-secondary/60 px-3 py-2 text-sm font-semibold text-secondary-foreground"
             role="note"
           >
-            Served {product.defaultTemperature === "HOT" ? "hot ☕ — no temperature choice on this one" : "cold ❄ — no temperature choice on this one"}
+            Served {product.defaultTemperature === "HOT" ? "hot ☕" : "cold ❄"}
           </p>
         )}
 
@@ -313,7 +313,7 @@ export function OrderDialog({
           </Label>
           <Input
             id="customer-callname"
-            placeholder="e.g., Kirby — what we shout when it's ready"
+            placeholder="Baby"
             value={callName}
             maxLength={40}
             onChange={(e) => {
@@ -336,8 +336,7 @@ export function OrderDialog({
             </p>
           ) : (
             <p className="text-xs text-muted-foreground">
-              This is what our staff will call out when your order is ready —
-              your nickname works great.
+              We will call you by this name when the order is ready.
             </p>
           )}
         </div>
@@ -352,7 +351,7 @@ export function OrderDialog({
           </Label>
           <Input
             id="customer-name"
-            placeholder="Your full name — kept on your order"
+            placeholder="Joshua Garcia"
             value={customerName}
             maxLength={40}
             onChange={(e) => {
@@ -388,7 +387,7 @@ export function OrderDialog({
             id="customer-email"
             type="email"
             inputMode="email"
-            placeholder="e.g., you@school.edu"
+            placeholder="goodstudent143@parsu.edu.ph"
             value={customerEmail}
             maxLength={120}
             onChange={(e) => {
