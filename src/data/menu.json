@@ -1,0 +1,68 @@
+{
+  "version": 2,
+  "booth": {
+    "boothName": "Coffee++",
+    "startDate": "2026-09-22T00:00:00.000Z",
+    "endDate": "2026-09-24T09:30:00.000Z",
+    "gcashNumber": "0917 123 4567",
+    "specsNumber": "0918 765 4321",
+    "contactEmail": "parsu.specs@gmail.com"
+  },
+  "products": [
+    {
+      "id": "CF-001",
+      "name": "Classic Coffee",
+      "description": "Freshly brewed bold coffee, hot or over ice.\n\nPromo:\nGet a FREE photobooth session for every 5 coffee orders",
+      "price": 25,
+      "image": "/images/products/ClassicCoffee.jpg",
+      "available": true,
+      "hasTemperature": true,
+      "category": "Drinks",
+      "defaultTemperature": null
+    },
+    {
+      "id": "CF-002",
+      "name": "Spanish Latte",
+      "description": "Creamy espresso with condensed milk, served hot or iced.",
+      "price": 35,
+      "image": "/images/products/SpanishLatte.jpg",
+      "available": true,
+      "hasTemperature": false,
+      "category": "Drinks",
+      "defaultTemperature": "COLD"
+    },
+    {
+      "id": "CF-003",
+      "name": "Matcha[New Product]",
+      "description": "Smooth ceremonial-grade matcha with milk, hot or iced.",
+      "price": 35,
+      "image": "/images/products/Matcha.webp",
+      "available": true,
+      "hasTemperature": false,
+      "category": "Drinks",
+      "defaultTemperature": "COLD"
+    },
+    {
+      "id": "FD-001",
+      "name": "Jelly Flan Cake",
+      "description": "A delicious layered dessert combining creamy leche flan, soft cake, and a smooth, vibrant color jelly topping. Sweet, creamy, and refreshing in every bite!",
+      "price": 15,
+      "image": "/images/products/JellyFlanCake.png",
+      "available": true,
+      "hasTemperature": false,
+      "category": "Pastries",
+      "defaultTemperature": null
+    },
+    {
+      "id": "PB-001",
+      "name": "Photobooth",
+      "description": "One photo-booth session with instant printed strip.",
+      "price": 50,
+      "image": "/images/products/Photobooth.webp",
+      "available": true,
+      "hasTemperature": false,
+      "category": "Extras",
+      "defaultTemperature": null
+    }
+  ]
+}
