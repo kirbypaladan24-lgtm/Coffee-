@@ -2,7 +2,7 @@
   "version": 2,
   "booth": {
     "boothName": "Coffee++",
-    "startDate": "2026-09-22T00:00:00.000Z",
+    "startDate": "2026-09-04T00:00:00.000Z",
     "endDate": "2026-09-24T09:30:00.000Z",
     "gcashNumber": "0917 123 4567",
     "specsNumber": "0918 765 4321",
@@ -36,7 +36,7 @@
       "name": "Matcha[New Product]",
       "description": "Smooth ceremonial-grade matcha with milk, hot or iced.",
       "price": 35,
-      "image": "/images/products/matcha.webp",
+      "image": "/images/products/Matcha.webp",
       "available": true,
       "hasTemperature": false,
       "category": "Drinks",
