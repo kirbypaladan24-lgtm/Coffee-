@@ -2,10 +2,10 @@
   "version": 2,
   "booth": {
     "boothName": "Coffee++",
-    "startDate": "2026-09-03T00:00:00.000Z",
+    "startDate": "2026-09-22T00:00:00.000Z",
     "endDate": "2026-09-24T09:30:00.000Z",
     "gcashNumber": "0917 123 4567",
-    "specsNumber": "0918 765 4321",
+    "specsNumber": "09123456789",
     "contactEmail": "parsu.specs@gmail.com"
   },
   "products": [
@@ -14,11 +14,11 @@
       "name": "Classic Coffee",
       "description": "Freshly brewed bold coffee, hot or over ice.\n\nPromo:\nGet a FREE photobooth session for every 5 coffee orders",
       "price": 25,
-      "image": "/images/products/ClassicCoffee.png",
+      "image": "/images/products/ClassicCoffee.jpg",
       "available": true,
       "hasTemperature": true,
-      "category": "Drinks",
-      "defaultTemperature": null
+      "defaultTemperature": null,
+      "category": "Drinks"
     },
     {
       "id": "CF-002",
@@ -28,8 +28,8 @@
       "image": "/images/products/SpanishLatte.jpg",
       "available": true,
       "hasTemperature": false,
-      "category": "Drinks",
-      "defaultTemperature": "COLD"
+      "defaultTemperature": "COLD",
+      "category": "Drinks"
     },
     {
       "id": "CF-003",
@@ -39,30 +39,30 @@
       "image": "/images/products/Matcha.jpg",
       "available": true,
       "hasTemperature": false,
-      "category": "Drinks",
-      "defaultTemperature": "COLD"
+      "defaultTemperature": "COLD",
+      "category": "Drinks"
     },
     {
       "id": "FD-001",
       "name": "Jelly Flan Cake",
       "description": "A delicious layered dessert combining creamy leche flan, soft cake, and a smooth, vibrant color jelly topping. Sweet, creamy, and refreshing in every bite!",
       "price": 15,
-      "image": "/images/products/JellyFlanCake.png",
+      "image": "/images/products/JellyFlanCake.jpg",
       "available": true,
       "hasTemperature": false,
-      "category": "Pastries",
-      "defaultTemperature": null
+      "defaultTemperature": null,
+      "category": "Pastries"
     },
     {
       "id": "PB-001",
       "name": "Photobooth",
       "description": "One photo-booth session with instant printed strip.",
       "price": 50,
-      "image": "/images/products/Photobooth.webp",
+      "image": "/images/products/Photobooth.jpg",
       "available": true,
       "hasTemperature": false,
-      "category": "Extras",
-      "defaultTemperature": null
+      "defaultTemperature": null,
+      "category": "Extras"
     }
   ]
 }
