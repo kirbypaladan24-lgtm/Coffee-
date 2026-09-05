@@ -52,55 +52,57 @@
 :root {
   --radius: 0.75rem;
 
-  /* Coffee++ light — warm cream & espresso */
-  --background: oklch(0.982 0.008 84);
-  --foreground: oklch(0.26 0.03 45);
+  /* Coffee++ light — green & coffee palette:
+     pale green, light green, dark green, dirty white,
+     white, light brown, dark brown */
+  --background: oklch(0.924 0.039 126);
+  --foreground: oklch(0.306 0.036 52);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.26 0.03 45);
+  --card-foreground: oklch(0.306 0.036 52);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.26 0.03 45);
+  --popover-foreground: oklch(0.306 0.036 52);
 
-  /* Primary: espresso brown */
-  --primary: oklch(0.44 0.09 45);
-  --primary-foreground: oklch(0.97 0.015 85);
+  /* Primary: dark green */
+  --primary: oklch(0.384 0.064 152);
+  --primary-foreground: oklch(0.943 0.021 92);
 
-  /* Secondary: latte */
-  --secondary: oklch(0.93 0.025 78);
-  --secondary-foreground: oklch(0.36 0.06 50);
+  /* Secondary: dirty white */
+  --secondary: oklch(0.943 0.021 92);
+  --secondary-foreground: oklch(0.384 0.064 152);
 
-  --muted: oklch(0.95 0.012 80);
-  --muted-foreground: oklch(0.54 0.025 60);
+  --muted: oklch(0.943 0.021 92);
+  --muted-foreground: oklch(0.53 0.07 71);
 
-  /* Accent: caramel hover */
-  --accent: oklch(0.9 0.045 75);
-  --accent-foreground: oklch(0.32 0.07 50);
+  /* Accent: light green tint */
+  --accent: oklch(0.9 0.075 127);
+  --accent-foreground: oklch(0.384 0.064 152);
 
   --destructive: oklch(0.55 0.19 28);
-  --border: oklch(0.885 0.02 78);
-  --input: oklch(0.885 0.02 78);
-  --ring: oklch(0.62 0.1 55);
+  --border: oklch(0.87 0.045 126);
+  --input: oklch(0.87 0.045 126);
+  --ring: oklch(0.673 0.079 71);
 
-  --success: oklch(0.55 0.13 150);
-  --success-foreground: oklch(0.98 0.01 90);
-  --warning: oklch(0.75 0.14 70);
-  --warning-foreground: oklch(0.3 0.06 55);
-  --cream: oklch(0.955 0.02 82);
+  --success: oklch(0.55 0.11 150);
+  --success-foreground: oklch(0.98 0.01 126);
+  --warning: oklch(0.673 0.079 71);
+  --warning-foreground: oklch(0.306 0.036 52);
+  --cream: oklch(0.943 0.021 92);
 
-  /* Charts: coffee, caramel, matcha, tan, terracotta */
-  --chart-1: oklch(0.45 0.09 45);
-  --chart-2: oklch(0.72 0.12 65);
-  --chart-3: oklch(0.62 0.1 135);
-  --chart-4: oklch(0.82 0.07 80);
-  --chart-5: oklch(0.62 0.15 40);
+  /* Charts: dark green, light green, light brown, pale green, dark brown */
+  --chart-1: oklch(0.384 0.064 152);
+  --chart-2: oklch(0.761 0.114 127);
+  --chart-3: oklch(0.673 0.079 71);
+  --chart-4: oklch(0.924 0.039 126);
+  --chart-5: oklch(0.306 0.036 52);
 
-  --sidebar: oklch(0.97 0.01 82);
-  --sidebar-foreground: oklch(0.26 0.03 45);
-  --sidebar-primary: oklch(0.44 0.09 45);
-  --sidebar-primary-foreground: oklch(0.97 0.015 85);
-  --sidebar-accent: oklch(0.9 0.045 75);
-  --sidebar-accent-foreground: oklch(0.32 0.07 50);
-  --sidebar-border: oklch(0.885 0.02 78);
-  --sidebar-ring: oklch(0.62 0.1 55);
+  --sidebar: oklch(0.943 0.021 92);
+  --sidebar-foreground: oklch(0.306 0.036 52);
+  --sidebar-primary: oklch(0.384 0.064 152);
+  --sidebar-primary-foreground: oklch(0.943 0.021 92);
+  --sidebar-accent: oklch(0.9 0.075 127);
+  --sidebar-accent-foreground: oklch(0.384 0.064 152);
+  --sidebar-border: oklch(0.87 0.045 126);
+  --sidebar-ring: oklch(0.673 0.079 71);
 }
 
 .dark {
@@ -163,6 +165,43 @@
     @apply bg-background text-foreground;
     font-feature-settings: "ss01";
   }
+  /* Main page background (light mode): a mix of greens blending together —
+     pale green into light green, cooled with dark green and a hint of
+     light brown. Dark mode keeps its flat espresso background. */
+  :root body {
+    background-image:
+      radial-gradient(
+        1100px 720px at 12% 2%,
+        oklch(0.761 0.114 127 / 0.3),
+        transparent 62%
+      ),
+      radial-gradient(
+        900px 640px at 88% 8%,
+        oklch(0.943 0.021 92 / 0.7),
+        transparent 58%
+      ),
+      radial-gradient(
+        1050px 780px at 85% 98%,
+        oklch(0.384 0.064 152 / 0.16),
+        transparent 60%
+      ),
+      radial-gradient(
+        760px 560px at 4% 96%,
+        oklch(0.673 0.079 71 / 0.1),
+        transparent 58%
+      ),
+      linear-gradient(
+        168deg,
+        oklch(0.955 0.03 122) 0%,
+        oklch(0.924 0.039 126) 36%,
+        oklch(0.86 0.07 127) 68%,
+        oklch(0.761 0.114 127 / 0.85) 100%
+      );
+    background-attachment: fixed;
+  }
+  .dark body {
+    background-image: none;
+  }
   .font-display {
     font-family: var(--font-fraunces), Georgia, serif;
   }
@@ -210,7 +249,7 @@
     display: none !important;
   }
   body {
-    background: white;
+    background: white !important;
   }
   /* Printed order tickets always use dark ink on white paper — even when the
      visitor browses in dark mode. Browsers drop element backgrounds when

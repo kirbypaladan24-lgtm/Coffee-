@@ -408,7 +408,7 @@ export function OrderDialog({
             </p>
           ) : (
             <p className="text-xs text-muted-foreground">
-              
+              We’ll include it with your order — handy if we need to reach you.
             </p>
           )}
         </div>
