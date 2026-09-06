@@ -33,7 +33,7 @@
     },
     {
       "id": "CF-003",
-      "name": "Matcha[New Product]",
+      "name": "Matcha",
       "description": "Smooth ceremonial-grade matcha with milk, hot or iced.",
       "price": 35,
       "image": "/images/products/Matcha.jpg",
@@ -61,6 +61,17 @@
       "image": "/images/products/Photobooth.jpg",
       "available": true,
       "hasTemperature": false,
+      "defaultTemperature": null,
+      "category": "Extras"
+    },
+    {
+      "id": "PR-001",
+      "name": "PROMO",
+      "description": "5 Coffee orders = Free Photobooth session",
+      "price": 125,
+      "image": "/images/products/Promo.jpg",
+      "available": true,
+      "hasTemperature": true,
       "defaultTemperature": null,
       "category": "Extras"
     }
