@@ -27,15 +27,17 @@ export function ProductCard({
         soldOut && "opacity-90"
       )}
     >
-      {/* Photo is pressable — opens the fullscreen image viewer. */}
+      {/* Photo is pressable — opens the fullscreen image viewer.
+          Square frame + object-contain: the WHOLE photo is always visible
+          (no top/bottom cropping), whatever aspect the admin uploaded. */}
       <PressableImage
         src={product.image || "/images/products/ClassicCoffee.jpg"}
         alt={product.name}
         caption={product.name}
         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-        className="aspect-[4/3]"
+        className="aspect-square"
         imageClassName={cn(
-          "transition-transform duration-300 group-hover:scale-[1.03]",
+          "object-contain",
           soldOut && "grayscale"
         )}
       >

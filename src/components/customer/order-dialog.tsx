@@ -24,7 +24,6 @@ import type {
   Order,
   PaymentMethod,
   PublicProduct,
-  Temperature,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -43,7 +42,11 @@ export function OrderDialog({
   const setActiveOrder = useCoffeeStore((s) => s.setActiveOrder);
   const addOrder = useCoffeeStore((s) => s.addOrder);
 
-  const [temperature, setTemperature] = React.useState<Temperature>("COLD");
+  // Smarter ordering: products with a temperature choice get SEPARATE
+  // steppers — one count for HOT, one for COLD — so a single order can mix
+  // (2 hot + 1 cold = two line items). No more picking a temp first.
+  const [hotQty, setHotQty] = React.useState(0);
+  const [coldQty, setColdQty] = React.useState(0);
   const [quantity, setQuantity] = React.useState(1);
   const [callName, setCallName] = React.useState("");
   const [customerName, setCustomerName] = React.useState("");
@@ -63,7 +66,8 @@ export function OrderDialog({
   // Reset form whenever a new product opens the dialog
   React.useEffect(() => {
     if (open) {
-      setTemperature("COLD");
+      setHotQty(0);
+      setColdQty(0);
       setQuantity(1);
       setCallName("");
       setCustomerName("");
@@ -78,9 +82,14 @@ export function OrderDialog({
   if (!product) return null;
 
   const soldOut = !product.available;
-  const total = product.price * quantity;
+  const hasTemp = product.hasTemperature;
+  const tempCount = hotQty + coldQty;
+  const total = hasTemp ? product.price * tempCount : product.price * quantity;
 
   function applyOrder() {
+    // Guard: a temperature-choice product needs at least one drink set.
+    // (The APPLY button is disabled in this state — this is just defense.)
+    if (product!.hasTemperature && hotQty + coldQty < 1) return;
     // How they want to be called — required: this is what our barista shouts.
     const alias = callName.trim();
     if (alias === "") {
@@ -115,20 +124,43 @@ export function OrderDialog({
       customerName: name.slice(0, 40),
       customerAlias: alias.slice(0, 40),
       customerEmail: email.toLowerCase().slice(0, 120),
-      items: [
-        {
-          productId: product!.id,
-          productName: product!.name,
-          // Chosen temp when there's a choice; otherwise the product's fixed
-          // serving temp — so the booth knows what the customer is getting.
-          temperature: product!.hasTemperature
-            ? temperature
-            : (product!.defaultTemperature ?? null),
-          quantity,
-          price: product!.price,
-          subtotal: product!.price * quantity,
-        },
-      ],
+      // Temperature products → one line per temperature with its own count
+      // (2 HOT + 1 COLD becomes two items — every system reads them as
+      // separate lines). Fixed-temp / no-temp products keep a single line
+      // carrying the product's fixed serving temp.
+      items: product!.hasTemperature
+        ? (
+            [
+              hotQty > 0 && {
+                productId: product!.id,
+                productName: product!.name,
+                temperature: "HOT" as const,
+                quantity: hotQty,
+                price: product!.price,
+                subtotal: product!.price * hotQty,
+              },
+              coldQty > 0 && {
+                productId: product!.id,
+                productName: product!.name,
+                temperature: "COLD" as const,
+                quantity: coldQty,
+                price: product!.price,
+                subtotal: product!.price * coldQty,
+              },
+            ] as const
+          ).filter((i): i is Exclude<typeof i, false> => i !== false)
+        : [
+            {
+              productId: product!.id,
+              productName: product!.name,
+              // The product's fixed serving temp — so the booth knows what
+              // the customer is getting.
+              temperature: product!.defaultTemperature ?? null,
+              quantity,
+              price: product!.price,
+              subtotal: product!.price * quantity,
+            },
+          ],
       total,
       paymentMethod,
       paymentStatus: "UNPAID",
@@ -148,7 +180,7 @@ export function OrderDialog({
     onOpenChange(false);
   }
 
-  const applyDisabled = soldOut || !orderingOpen;
+  const applyDisabled = soldOut || !orderingOpen || (hasTemp && tempCount < 1);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -156,8 +188,10 @@ export function OrderDialog({
         <DialogHeader className="sr-only">
           <DialogTitle>Order {product.name}</DialogTitle>
           <DialogDescription>
-            Choose temperature, quantity, and payment method, then tell us what
-            to call you and enter your name — email is optional.
+            Set separate hot and cold counts when the drink offers a choice
+            (or the quantity for fixed-temperature items), pick a payment
+            method, then tell us what to call you and enter your name — email
+            is optional.
           </DialogDescription>
         </DialogHeader>
 
@@ -216,92 +250,157 @@ export function OrderDialog({
           </p>
         )}
 
-        {/* Temperature */}
+        {/* Hot & Cold counts — a separate stepper per temperature.          */}
+        {/* One order can mix: 2 hot + 1 cold = two line items downstream.    */}
         {product.hasTemperature && (
           <div className="space-y-2">
-            <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              Temperature
+            <Label
+              id="temp-counts-label"
+              className="text-xs font-bold uppercase tracking-wider text-muted-foreground"
+            >
+              How many? — set each temperature
             </Label>
             <div
-              className="grid grid-cols-2 gap-2"
-              role="radiogroup"
-              aria-label="Temperature"
+              className="space-y-2"
+              role="group"
+              aria-labelledby="temp-counts-label"
             >
-              {(
-                [
-                  { value: "HOT", icon: Flame, hint: "Steaming cup" },
-                  { value: "COLD", icon: Snowflake, hint: "Over ice" },
-                ] as const
-              ).map(({ value, icon: Icon, hint }) => (
-                <button
-                  key={value}
-                  type="button"
-                  role="radio"
-                  aria-checked={temperature === value}
-                  onClick={() => setTemperature(value)}
-                  className={cn(
-                    "flex h-11 items-center justify-center gap-2 rounded-md border text-sm font-bold transition-colors",
-                    temperature === value
-                      ? "border-primary bg-primary text-primary-foreground"
-                      : "border-input bg-background text-foreground hover:bg-accent"
-                  )}
-                >
-                  <Icon className="h-4 w-4" aria-hidden />
-                  {value}
-                  <span
-                    className={cn(
-                      "hidden font-normal sm:inline",
-                      temperature === value
-                        ? "text-primary-foreground/70"
-                        : "text-muted-foreground"
-                    )}
+              {/* HOT row */}
+              <div className="flex h-12 items-center gap-2 rounded-md border border-warning/40 bg-warning/10 pl-3">
+                <span className="flex shrink-0 items-center gap-1.5 text-sm font-bold text-warning-foreground">
+                  <Flame className="h-4 w-4" aria-hidden />
+                  HOT
+                </span>
+                <div className="ml-auto flex items-center gap-1">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => setHotQty((q) => Math.max(0, q - 1))}
+                    disabled={hotQty <= 0}
+                    aria-label="Decrease hot count"
                   >
-                    · {hint}
+                    <Minus className="h-4 w-4" aria-hidden />
+                  </Button>
+                  <span
+                    className="min-w-8 text-center text-base font-bold tabular-nums"
+                    aria-live="polite"
+                  >
+                    {hotQty}
                   </span>
-                </button>
-              ))}
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => setHotQty((q) => q + 1)}
+                    aria-label="Increase hot count"
+                  >
+                    <Plus className="h-4 w-4" aria-hidden />
+                  </Button>
+                </div>
+                <span
+                  className="w-14 shrink-0 text-right text-xs font-semibold tabular-nums text-muted-foreground"
+                  aria-label={`Hot subtotal ${formatPeso(product.price * hotQty)}`}
+                >
+                  {hotQty > 0 ? formatPeso(product.price * hotQty) : "—"}
+                </span>
+              </div>
+              {/* COLD row */}
+              <div className="flex h-12 items-center gap-2 rounded-md border border-secondary bg-secondary/50 pl-3">
+                <span className="flex shrink-0 items-center gap-1.5 text-sm font-bold text-secondary-foreground">
+                  <Snowflake className="h-4 w-4" aria-hidden />
+                  COLD
+                </span>
+                <div className="ml-auto flex items-center gap-1">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => setColdQty((q) => Math.max(0, q - 1))}
+                    disabled={coldQty <= 0}
+                    aria-label="Decrease cold count"
+                  >
+                    <Minus className="h-4 w-4" aria-hidden />
+                  </Button>
+                  <span
+                    className="min-w-8 text-center text-base font-bold tabular-nums"
+                    aria-live="polite"
+                  >
+                    {coldQty}
+                  </span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => setColdQty((q) => q + 1)}
+                    aria-label="Increase cold count"
+                  >
+                    <Plus className="h-4 w-4" aria-hidden />
+                  </Button>
+                </div>
+                <span
+                  className="w-14 shrink-0 text-right text-xs font-semibold tabular-nums text-muted-foreground"
+                  aria-label={`Cold subtotal ${formatPeso(product.price * coldQty)}`}
+                >
+                  {coldQty > 0 ? formatPeso(product.price * coldQty) : "—"}
+                </span>
+              </div>
             </div>
+            <p className="text-xs text-muted-foreground">
+              Mix and match — separate counts for hot and cold, no limit.
+            </p>
+            {tempCount < 1 && (
+              <p className="text-xs font-medium text-destructive" role="alert">
+                Set a count for at least one — hot or cold.
+              </p>
+            )}
           </div>
         )}
 
-        {/* Quantity */}
-        <div className="space-y-2">
-          <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-            Quantity
-          </Label>
-          <div className="flex h-11 items-center justify-between rounded-md border border-input bg-background px-1.5">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-              disabled={quantity <= 1}
-              aria-label="Decrease quantity"
-            >
-              <Minus className="h-4 w-4" aria-hidden />
-            </Button>
-            <span
-              className="min-w-10 text-center text-base font-bold tabular-nums"
-              aria-live="polite"
-            >
-              {quantity}
-            </span>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              onClick={() => setQuantity((q) => q + 1)}
-              aria-label="Increase quantity"
-            >
-              <Plus className="h-4 w-4" aria-hidden />
-            </Button>
+        {/* Quantity — only for items WITHOUT a temperature choice */}
+        {!product.hasTemperature && (
+          <div className="space-y-2">
+            <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              Quantity
+            </Label>
+            <div className="flex h-11 items-center justify-between rounded-md border border-input bg-background px-1.5">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                disabled={quantity <= 1}
+                aria-label="Decrease quantity"
+              >
+                <Minus className="h-4 w-4" aria-hidden />
+              </Button>
+              <span
+                className="min-w-10 text-center text-base font-bold tabular-nums"
+                aria-live="polite"
+              >
+                {quantity}
+              </span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setQuantity((q) => q + 1)}
+                aria-label="Increase quantity"
+              >
+                <Plus className="h-4 w-4" aria-hidden />
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              No limit — order as many as you need, the booth brews to demand.
+            </p>
           </div>
-          <p className="text-xs text-muted-foreground">
-            No limit — order as many as you need, the booth brews to demand.
-          </p>
-        </div>
+        )}
 
         {/* How should we call you — required, asked FIRST */}
         <div className="space-y-2">
@@ -463,21 +562,58 @@ export function OrderDialog({
           </RadioGroup>
         </div>
 
-        {/* Summary — total always visible */}
+        {/* Summary — one row per temperature line, total always visible */}
         <div className="space-y-1.5 rounded-lg bg-secondary/70 p-3 text-sm">
-          <div className="flex justify-between text-muted-foreground">
-            <span>
-              {product.name}
-              {product.hasTemperature
-                ? ` · ${temperature}`
-                : product.defaultTemperature
+          {product.hasTemperature ? (
+            <>
+              {hotQty > 0 && (
+                <div className="flex justify-between text-muted-foreground">
+                  <span>
+                    {product.name} · HOT
+                    <Flame
+                      className="ml-1 inline h-3 w-3 align-[-2px]"
+                      aria-hidden
+                    />
+                  </span>
+                  <span>
+                    {hotQty} × {formatPeso(product.price)}
+                  </span>
+                </div>
+              )}
+              {coldQty > 0 && (
+                <div className="flex justify-between text-muted-foreground">
+                  <span>
+                    {product.name} · COLD
+                    <Snowflake
+                      className="ml-1 inline h-3 w-3 align-[-2px]"
+                      aria-hidden
+                    />
+                  </span>
+                  <span>
+                    {coldQty} × {formatPeso(product.price)}
+                  </span>
+                </div>
+              )}
+              {tempCount < 1 && (
+                <div className="flex justify-between text-muted-foreground">
+                  <span>{product.name} · nothing set yet</span>
+                  <span>0 × {formatPeso(product.price)}</span>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="flex justify-between text-muted-foreground">
+              <span>
+                {product.name}
+                {product.defaultTemperature
                   ? ` · ${product.defaultTemperature}`
                   : ""}
-            </span>
-            <span>
-              {quantity} × {formatPeso(product.price)}
-            </span>
-          </div>
+              </span>
+              <span>
+                {quantity} × {formatPeso(product.price)}
+              </span>
+            </div>
+          )}
           <div className="flex justify-between border-t border-border/60 pt-2 text-base font-bold text-foreground">
             <span>TOTAL</span>
             <span className="font-display text-lg">{formatPeso(total)}</span>

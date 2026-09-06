@@ -9,7 +9,7 @@ export const HOW_TO_ORDER_STEPS = [
   },
   {
     title: "Customize your order",
-    text: "Choose HOT or COLD where offered, set your quantity, and pick a payment method.",
+    text: "Set separate HOT and COLD counts where offered (mix them in one order), then pick a payment method.",
   },
   {
     title: "Tell us what to call you",

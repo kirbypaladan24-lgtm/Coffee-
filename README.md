@@ -83,7 +83,11 @@ availability and booth dates stay in sync automatically.
 
 ## How ordering works
 
-1. Customer picks a product (HOT/COLD where offered, quantity up to 10).
+1. Customer picks a product. Drinks with a **Hot / Cold choice get SEPARATE
+   hot and cold steppers** — set each count (e.g. 2 hot + 1 cold in one
+   order; the order then carries one line per temperature, kept separate all
+   the way to the booth). Items with a fixed temperature get a single
+   quantity stepper, and the product's fixed serving temp rides along.
 2. **How should we call you?** — the call-out name (required). This is what
    the staff shouts when the order is ready, so a nickname works great.
 3. Name is required; email is optional (validated when provided).

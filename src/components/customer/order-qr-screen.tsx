@@ -129,9 +129,11 @@ export function OrderQRScreen() {
 
             {/* Order details */}
             <div className="space-y-1.5 border-t border-border/60 pt-4 text-sm">
+              {/* One row per line item — a Hot/Cold order can carry two lines
+                  for the same product, so the key includes the temperature. */}
               {order.items.map((item) => (
                 <div
-                  key={item.productId}
+                  key={`${item.productId}-${item.temperature ?? "none"}`}
                   className="flex justify-between text-foreground"
                 >
                   <span className="truncate pr-2">

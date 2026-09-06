@@ -31,7 +31,7 @@ export function MenuSection() {
       <SectionHeading
         eyebrow="The Menu"
         title="Brewed Fresh, Priced Fair"
-        lead="Everything is prepared on the spot by the Coffee++ team. Drinks marked Hot / Cold let you pick your temperature."
+        lead="Everything is prepared on the spot by the Coffee++ team. Drinks marked Hot / Cold get separate hot and cold counts — mix them in one order."
       />
 
       {/* Category filter */}

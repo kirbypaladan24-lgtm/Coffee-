@@ -9,8 +9,8 @@ import { PressableImage } from "./image-viewer";
 const SAMPLES = [
   { src: "/images/photobooth/sample-1.jpg", caption: "Booth besties", rotate: "-rotate-2" },
   { src: "/images/photobooth/sample-2.jpg", caption: "Props on", rotate: "rotate-1" },
-  { src: "/images/photobooth/sample-3.jpg", caption: "Solo :(", rotate: "-rotate-1" },
-  { src: "/images/photobooth/sample-4.jpg", caption: "Cutie", rotate: "rotate-2" },
+  { src: "/images/photobooth/sample-3.jpg", caption: "Morning pick", rotate: "-rotate-1" },
+  { src: "/images/photobooth/sample-4.jpg", caption: "Golden hour", rotate: "rotate-2" },
 ];
 
 /** Photo booth gallery — playful but tidy polaroid wall.
