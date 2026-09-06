@@ -54,8 +54,10 @@
 
   /* Coffee++ light — green & coffee palette:
      pale green, light green, dark green, dirty white,
-     white, light brown, dark brown */
-  --background: oklch(0.924 0.039 126);
+     white, light brown, dark brown.
+     Greens deepened a second step (light mode only) for a
+     stronger dark-green identity; dark mode untouched. */
+  --background: oklch(0.80 0.08 127);
   --foreground: oklch(0.306 0.036 52);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.306 0.036 52);
@@ -73,16 +75,16 @@
   --muted: oklch(0.943 0.021 92);
   --muted-foreground: oklch(0.53 0.07 71);
 
-  /* Accent: light green tint */
-  --accent: oklch(0.9 0.075 127);
+  /* Accent: light green tint (deepened — was 0.86 0.09) */
+  --accent: oklch(0.78 0.115 128);
   --accent-foreground: oklch(0.384 0.064 152);
 
   --destructive: oklch(0.55 0.19 28);
-  --border: oklch(0.87 0.045 126);
-  --input: oklch(0.87 0.045 126);
+  --border: oklch(0.75 0.08 127);
+  --input: oklch(0.75 0.08 127);
   --ring: oklch(0.673 0.079 71);
 
-  --success: oklch(0.55 0.11 150);
+  --success: oklch(0.38 0.14 153);
   --success-foreground: oklch(0.98 0.01 126);
   --warning: oklch(0.673 0.079 71);
   --warning-foreground: oklch(0.306 0.036 52);
@@ -99,9 +101,9 @@
   --sidebar-foreground: oklch(0.306 0.036 52);
   --sidebar-primary: oklch(0.384 0.064 152);
   --sidebar-primary-foreground: oklch(0.943 0.021 92);
-  --sidebar-accent: oklch(0.9 0.075 127);
+  --sidebar-accent: oklch(0.78 0.115 128);
   --sidebar-accent-foreground: oklch(0.384 0.064 152);
-  --sidebar-border: oklch(0.87 0.045 126);
+  --sidebar-border: oklch(0.75 0.08 127);
   --sidebar-ring: oklch(0.673 0.079 71);
 }
 
@@ -167,12 +169,13 @@
   }
   /* Main page background (light mode): a mix of greens blending together —
      pale green into light green, cooled with dark green and a hint of
-     light brown. Dark mode keeps its flat espresso background. */
+     light brown. Dark mode keeps its flat espresso background.
+     Greens deepened a second step so the page reads clearly dark-green. */
   :root body {
     background-image:
       radial-gradient(
         1100px 720px at 12% 2%,
-        oklch(0.761 0.114 127 / 0.3),
+        oklch(0.64 0.14 128 / 0.38),
         transparent 62%
       ),
       radial-gradient(
@@ -182,7 +185,7 @@
       ),
       radial-gradient(
         1050px 780px at 85% 98%,
-        oklch(0.384 0.064 152 / 0.16),
+        oklch(0.32 0.08 152 / 0.28),
         transparent 60%
       ),
       radial-gradient(
@@ -192,10 +195,10 @@
       ),
       linear-gradient(
         168deg,
-        oklch(0.955 0.03 122) 0%,
-        oklch(0.924 0.039 126) 36%,
-        oklch(0.86 0.07 127) 68%,
-        oklch(0.761 0.114 127 / 0.85) 100%
+        oklch(0.87 0.05 125) 0%,
+        oklch(0.79 0.08 128) 36%,
+        oklch(0.70 0.115 128) 68%,
+        oklch(0.60 0.15 130 / 0.85) 100%
       );
     background-attachment: fixed;
   }

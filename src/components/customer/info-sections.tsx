@@ -14,8 +14,8 @@ export function HowToOrderSection() {
       id="how-to-order"
       className="container mx-auto scroll-mt-20 px-4 py-12 sm:py-16"
     >
-      <SectionHeading eyebrow="How to Order" title="Four Steps" lead="" />
-      <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <SectionHeading eyebrow="How to Order" title="Five Steps" lead="" />
+      <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {HOW_TO_ORDER_STEPS.map((step, i) => (
           <li key={step.title}>
             <Card className="h-full border-border/70">

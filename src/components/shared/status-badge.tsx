@@ -1,12 +1,13 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { BadgeCheck, CircleAlert } from "lucide-react";
+import { BadgeCheck, X } from "lucide-react";
 
-type Variant = "neutral" | "success" | "muted";
+type Variant = "neutral" | "success" | "danger" | "muted";
 
 const variantClasses: Record<Variant, string> = {
   neutral: "bg-secondary text-secondary-foreground border-transparent",
   success: "bg-success/15 text-success border-success/40",
+  danger: "bg-destructive/15 text-destructive border-destructive/40",
   muted: "bg-muted text-muted-foreground border-border",
 };
 
@@ -39,14 +40,19 @@ export function AvailabilityBadge({
   soldOut: boolean;
   className?: string;
 }) {
+  // Icon-only status: green check (in stock) / red X (sold out).
+  // The label stays for screen readers as sr-only text.
   return (
-    <BadgeShell variant={soldOut ? "muted" : "success"} className={className}>
+    <BadgeShell
+      variant={soldOut ? "danger" : "success"}
+      className={cn("px-1.5", className)}
+    >
       {soldOut ? (
-        <CircleAlert className="h-3 w-3" aria-hidden />
+        <X className="h-4 w-4" aria-hidden strokeWidth={2.75} />
       ) : (
-        <BadgeCheck className="h-3 w-3" aria-hidden />
+        <BadgeCheck className="h-4 w-4" aria-hidden />
       )}
-      {soldOut ? "SOLD OUT" : "AVAILABLE"}
+      <span className="sr-only">{soldOut ? "Sold out" : "Available"}</span>
     </BadgeShell>
   );
 }

@@ -18,7 +18,7 @@ export function Hero({ settings }: { settings: BoothSettings }) {
           aria-hidden
         />
 
-        <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-secondary px-4 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-secondary-foreground">
+        <span className="inline-flex items-center gap-2 rounded-full border border-transparent bg-primary px-4 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-primary-foreground dark:border-primary/20 dark:bg-secondary dark:text-secondary-foreground">
           <Coffee className="h-3.5 w-3.5" aria-hidden />
           SPECS Booth · 3 Days Only
         </span>

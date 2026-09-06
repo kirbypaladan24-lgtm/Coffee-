@@ -38,17 +38,9 @@ export function ProductCard({
         className="aspect-square"
         imageClassName={cn(
           "object-contain",
-          soldOut && "grayscale"
+          soldOut && "grayscale opacity-75"
         )}
-      >
-        {soldOut && (
-          <div className="absolute inset-0 flex items-center justify-center bg-background/60">
-            <span className="rounded-full bg-destructive px-3 py-1 text-xs font-bold uppercase tracking-widest text-white">
-              Sold Out
-            </span>
-          </div>
-        )}
-      </PressableImage>
+      />
 
       <CardContent className="flex flex-1 flex-col gap-1.5 p-3 sm:p-4">
         <div className="flex items-start justify-between gap-2">
