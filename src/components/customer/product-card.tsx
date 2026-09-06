@@ -23,7 +23,7 @@ export function ProductCard({
   return (
     <Card
       className={cn(
-        "group flex h-full flex-col overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md",
+        "group flex h-full flex-col gap-0 py-0 overflow-hidden transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md",
         soldOut && "opacity-90"
       )}
     >

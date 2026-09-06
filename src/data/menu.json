@@ -2,7 +2,7 @@
   "version": 2,
   "booth": {
     "boothName": "Coffee++",
-    "startDate": "2026-09-04T00:00:00.000Z",
+    "startDate": "2026-09-22T00:00:00.000Z",
     "endDate": "2026-09-24T09:30:00.000Z",
     "gcashNumber": "0917 123 4567",
     "specsNumber": "09123456789",
@@ -17,8 +17,8 @@
       "image": "/images/products/ClassicCoffee.jpg",
       "available": true,
       "hasTemperature": true,
-      "defaultTemperature": null,
-      "category": "Drinks"
+      "category": "Drinks",
+      "defaultTemperature": null
     },
     {
       "id": "CF-002",
@@ -28,8 +28,8 @@
       "image": "/images/products/SpanishLatte.jpg",
       "available": true,
       "hasTemperature": false,
-      "defaultTemperature": "COLD",
-      "category": "Drinks"
+      "category": "Drinks",
+      "defaultTemperature": "COLD"
     },
     {
       "id": "CF-003",
@@ -39,8 +39,8 @@
       "image": "/images/products/Matcha.jpg",
       "available": true,
       "hasTemperature": false,
-      "defaultTemperature": "COLD",
-      "category": "Drinks"
+      "category": "Drinks",
+      "defaultTemperature": "COLD"
     },
     {
       "id": "FD-001",
@@ -50,8 +50,8 @@
       "image": "/images/products/JellyFlanCake.jpg",
       "available": true,
       "hasTemperature": false,
-      "defaultTemperature": null,
-      "category": "Pastries"
+      "category": "Pastries",
+      "defaultTemperature": null
     },
     {
       "id": "PB-001",
@@ -61,8 +61,8 @@
       "image": "/images/products/Photobooth.jpg",
       "available": true,
       "hasTemperature": false,
-      "defaultTemperature": null,
-      "category": "Extras"
+      "category": "Extras",
+      "defaultTemperature": null
     },
     {
       "id": "PR-001",
@@ -72,8 +72,8 @@
       "image": "/images/products/Promo.jpg",
       "available": true,
       "hasTemperature": true,
-      "defaultTemperature": null,
-      "category": "Extras"
+      "category": "Extras",
+      "defaultTemperature": null
     }
   ]
 }
