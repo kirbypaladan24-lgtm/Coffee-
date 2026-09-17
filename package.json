@@ -4,6 +4,9 @@
   "private": true,
   "description": "Coffee++ \u2014 the public customer ordering site. Browse the menu, place an order, and show your Order QR at the booth. Fully self-contained: no server, no database.",
   "scripts": {
+    "sanitize:menu": "node scripts/strip-menu-bom.js",
+    "predev": "npm run sanitize:menu",
+    "prebuild": "npm run sanitize:menu",
     "dev": "next dev -p 3000",
     "build": "next build",
     "start": "next start -p 3000",

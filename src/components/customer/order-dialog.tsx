@@ -18,7 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useCoffeeStore } from "@/lib/store";
 import { generateOrderCode } from "@/lib/order-code";
 import { formatPeso } from "@/lib/format";
-import { boothStateOf, boothSettings } from "@/data/menu";
+import { boothStateOf, boothSettings, isGcashEnabled } from "@/data/menu";
 import type {
   BoothState,
   Order,
@@ -56,12 +56,32 @@ export function OrderDialog({
   const [emailError, setEmailError] = React.useState<string | null>(null);
   const [paymentMethod, setPaymentMethod] =
     React.useState<PaymentMethod>("GCASH");
+  const [sizeName, setSizeName] = React.useState("");
+  const [answers, setAnswers] = React.useState<Record<string, string>>({});
+
+  // GCash switch from menu.json — when off, GCash is hidden and BOOTH wins.
+  const gcashOn = isGcashEnabled(boothSettings);
 
   const boothState: BoothState = React.useMemo(
     () => boothStateOf(boothSettings),
     [open]
   );
   const orderingOpen = boothState === "OPEN";
+
+  // Size menu — honored only while the product's flag is on with entries.
+  const sizesOn = !!product?.hasSizes && (product?.sizes?.length ?? 0) > 0;
+  const unitPrice = sizesOn
+    ? (product?.sizes.find((s) => s.name === sizeName)?.price ?? 0)
+    : (product?.price ?? 0);
+
+  // Custom inputs — honored only while the product's flag is on with entries.
+  const fieldsOn = !!product?.hasFields && (product?.fields?.length ?? 0) > 0;
+  const fieldsMissing =
+    product && fieldsOn
+      ? (product.fields ?? []).some(
+          (f) => f.required && (answers[f.label] ?? "").trim() === ""
+        )
+      : false;
 
   // Reset form whenever a new product opens the dialog
   React.useEffect(() => {
@@ -75,7 +95,9 @@ export function OrderDialog({
       setCallNameError(null);
       setNameError(null);
       setEmailError(null);
-      setPaymentMethod("GCASH");
+      setPaymentMethod(isGcashEnabled(boothSettings) ? "GCASH" : "BOOTH");
+      setSizeName("");
+      setAnswers({});
     }
   }, [open, product?.id]);
 
@@ -84,12 +106,15 @@ export function OrderDialog({
   const soldOut = !product.available;
   const hasTemp = product.hasTemperature;
   const tempCount = hotQty + coldQty;
-  const total = hasTemp ? product.price * tempCount : product.price * quantity;
+  const total = hasTemp ? unitPrice * tempCount : unitPrice * quantity;
 
   function applyOrder() {
-    // Guard: a temperature-choice product needs at least one drink set.
-    // (The APPLY button is disabled in this state — this is just defense.)
+    // Guard: a temperature-choice product needs at least one drink set,
+    // and a size-menu product needs a size — the APPLY button is disabled
+    // in these states too, this is just defense.
     if (product!.hasTemperature && hotQty + coldQty < 1) return;
+    if (sizesOn && !sizeName) return;
+    if (fieldsMissing) return;
     // How they want to be called — required: this is what our barista shouts.
     const alias = callName.trim();
     if (alias === "") {
@@ -119,6 +144,12 @@ export function OrderDialog({
 
   /** The order is created entirely on this device — no server involved. */
   function createOrder(alias: string, name: string, email: string) {
+    // Snapshot this product's custom-field answers onto every line.
+    const answerTag = fieldsOn
+      ? (product!.fields ?? [])
+          .map((f) => ({ label: f.label, value: (answers[f.label] ?? "").slice(0, 100) }))
+          .filter((a) => a.value.trim() !== "")
+      : [];
     const order: Order = {
       orderId: generateOrderCode(),
       customerName: name.slice(0, 40),
@@ -127,7 +158,8 @@ export function OrderDialog({
       // Temperature products → one line per temperature with its own count
       // (2 HOT + 1 COLD becomes two items — every system reads them as
       // separate lines). Fixed-temp / no-temp products keep a single line
-      // carrying the product's fixed serving temp.
+      // carrying the product's fixed serving temp. Every line carries the
+      // chosen size (priced at the size's own price).
       items: product!.hasTemperature
         ? (
             [
@@ -135,17 +167,21 @@ export function OrderDialog({
                 productId: product!.id,
                 productName: product!.name,
                 temperature: "HOT" as const,
+                size: sizesOn ? sizeName : null,
+                answers: answerTag,
                 quantity: hotQty,
-                price: product!.price,
-                subtotal: product!.price * hotQty,
+                price: unitPrice,
+                subtotal: unitPrice * hotQty,
               },
               coldQty > 0 && {
                 productId: product!.id,
                 productName: product!.name,
                 temperature: "COLD" as const,
+                size: sizesOn ? sizeName : null,
+                answers: answerTag,
                 quantity: coldQty,
-                price: product!.price,
-                subtotal: product!.price * coldQty,
+                price: unitPrice,
+                subtotal: unitPrice * coldQty,
               },
             ] as const
           ).filter((i): i is Exclude<typeof i, false> => i !== false)
@@ -156,13 +192,15 @@ export function OrderDialog({
               // The product's fixed serving temp — so the booth knows what
               // the customer is getting.
               temperature: product!.defaultTemperature ?? null,
+              size: sizesOn ? sizeName : null,
+              answers: answerTag,
               quantity,
-              price: product!.price,
-              subtotal: product!.price * quantity,
+              price: unitPrice,
+              subtotal: unitPrice * quantity,
             },
           ],
       total,
-      paymentMethod,
+      paymentMethod: gcashOn ? paymentMethod : "BOOTH",
       paymentStatus: "UNPAID",
       orderStatus: "PENDING",
       abortReason: null,
@@ -180,7 +218,12 @@ export function OrderDialog({
     onOpenChange(false);
   }
 
-  const applyDisabled = soldOut || !orderingOpen || (hasTemp && tempCount < 1);
+  const applyDisabled =
+    soldOut ||
+    !orderingOpen ||
+    (hasTemp && tempCount < 1) ||
+    (sizesOn && !sizeName) ||
+    fieldsMissing;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -230,7 +273,10 @@ export function OrderDialog({
               )}
             </div>
             <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              {product.id} · {formatPeso(product.price)} each
+              {product.id} ·{" "}
+              {sizesOn
+                ? `From ${formatPeso(Math.min(...product.sizes.map((s) => s.price)))}`
+                : `${formatPeso(product.price)} each`}
             </p>
             {product.description && (
               <p className="mt-0.5 whitespace-pre-line text-xs leading-relaxed text-muted-foreground">
@@ -248,6 +294,90 @@ export function OrderDialog({
           >
             Served {product.defaultTemperature === "HOT" ? "hot ☕" : "cold ❄"}
           </p>
+        )}
+
+        {/* Size — one pick per product, each size priced on its own. */}
+        {sizesOn && (
+          <div className="space-y-2">
+            <Label
+              id="size-label"
+              className="text-xs font-bold uppercase tracking-wider text-muted-foreground"
+            >
+              Size
+            </Label>
+            <RadioGroup
+              value={sizeName}
+              onValueChange={setSizeName}
+              className="grid grid-cols-2 gap-2"
+              aria-labelledby="size-label"
+            >
+              {product.sizes.map((s) => (
+                <Label
+                  key={s.name}
+                  htmlFor={`size-${s.name}`}
+                  className={cn(
+                    "flex cursor-pointer items-center justify-between gap-2 rounded-md border p-3 transition-colors",
+                    sizeName === s.name
+                      ? "border-primary bg-primary/5"
+                      : "border-input hover:bg-accent"
+                  )}
+                >
+                  <span className="flex items-center gap-2">
+                    <RadioGroupItem value={s.name} id={`size-${s.name}`} />
+                    <span className="text-sm font-bold text-foreground">
+                      {s.name}
+                    </span>
+                  </span>
+                  <span className="text-xs font-semibold tabular-nums text-muted-foreground">
+                    {formatPeso(s.price)}
+                  </span>
+                </Label>
+              ))}
+            </RadioGroup>
+            {!sizeName && (
+              <p className="text-xs font-medium text-destructive" role="alert">
+                Pick a size first.
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Custom inputs — answers ride inside the Order QR with the order. */}
+        {fieldsOn && (
+          <div className="space-y-2">
+            <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              Extra details
+            </Label>
+            {(product.fields ?? []).map((f) => (
+              <div key={f.label} className="space-y-1">
+                <Label htmlFor={`order-field-${f.label}`} className="text-sm">
+                  {f.label}{" "}
+                  {f.required ? (
+                    <span className="text-destructive">*</span>
+                  ) : (
+                    <span className="text-xs font-normal text-muted-foreground">
+                      (optional)
+                    </span>
+                  )}
+                </Label>
+                <Input
+                  id={`order-field-${f.label}`}
+                  value={answers[f.label] ?? ""}
+                  onChange={(e) =>
+                    setAnswers((a) => ({ ...a, [f.label]: e.target.value }))
+                  }
+                  maxLength={100}
+                  placeholder={f.label}
+                  autoComplete="off"
+                />
+              </div>
+            ))}
+            {fieldsMissing && (
+              <p className="text-xs font-medium text-destructive" role="alert">
+                Fill the required inputs first.
+              </p>
+            )}
+          </div>
         )}
 
         {/* Hot & Cold counts — a separate stepper per temperature.          */}
@@ -302,9 +432,9 @@ export function OrderDialog({
                 </div>
                 <span
                   className="w-14 shrink-0 text-right text-xs font-semibold tabular-nums text-muted-foreground"
-                  aria-label={`Hot subtotal ${formatPeso(product.price * hotQty)}`}
+                  aria-label={`Hot subtotal ${formatPeso(unitPrice * hotQty)}`}
                 >
-                  {hotQty > 0 ? formatPeso(product.price * hotQty) : "—"}
+                  {hotQty > 0 ? formatPeso(unitPrice * hotQty) : "—"}
                 </span>
               </div>
               {/* COLD row */}
@@ -344,14 +474,14 @@ export function OrderDialog({
                 </div>
                 <span
                   className="w-14 shrink-0 text-right text-xs font-semibold tabular-nums text-muted-foreground"
-                  aria-label={`Cold subtotal ${formatPeso(product.price * coldQty)}`}
+                  aria-label={`Cold subtotal ${formatPeso(unitPrice * coldQty)}`}
                 >
-                  {coldQty > 0 ? formatPeso(product.price * coldQty) : "—"}
+                  {coldQty > 0 ? formatPeso(unitPrice * coldQty) : "—"}
                 </span>
               </div>
             </div>
             <p className="text-xs text-muted-foreground">
-              Mix and match — separate counts for hot and cold, no limit.
+              
             </p>
             {tempCount < 1 && (
               <p className="text-xs font-medium text-destructive" role="alert">
@@ -397,7 +527,7 @@ export function OrderDialog({
               </Button>
             </div>
             <p className="text-xs text-muted-foreground">
-              No limit — order as many as you need, the booth brews to demand.
+              
             </p>
           </div>
         )}
@@ -507,7 +637,7 @@ export function OrderDialog({
             </p>
           ) : (
             <p className="text-xs text-muted-foreground">
-              We’ll include it with your order — handy if we need to reach you.
+              
             </p>
           )}
         </div>
@@ -518,28 +648,30 @@ export function OrderDialog({
             Payment Method
           </Label>
           <RadioGroup
-            value={paymentMethod}
+            value={gcashOn ? paymentMethod : "BOOTH"}
             onValueChange={(v) => setPaymentMethod(v as PaymentMethod)}
             className="grid gap-2"
           >
-            <Label
-              htmlFor="pay-gcash"
-              className={cn(
-                "flex cursor-pointer items-start gap-3 rounded-md border p-3 transition-colors",
-                paymentMethod === "GCASH"
-                  ? "border-primary bg-primary/5"
-                  : "border-input hover:bg-accent"
-              )}
-            >
-              <RadioGroupItem value="GCASH" id="pay-gcash" className="mt-0.5" />
-              <div>
-                <p className="text-sm font-bold text-foreground">GCash</p>
-                <p className="text-xs text-muted-foreground">
-                  Send the exact total via GCash — staff verifies it at the
-                  booth.
-                </p>
-              </div>
-            </Label>
+            {gcashOn && (
+              <Label
+                htmlFor="pay-gcash"
+                className={cn(
+                  "flex cursor-pointer items-start gap-3 rounded-md border p-3 transition-colors",
+                  paymentMethod === "GCASH"
+                    ? "border-primary bg-primary/5"
+                    : "border-input hover:bg-accent"
+                )}
+              >
+                <RadioGroupItem value="GCASH" id="pay-gcash" className="mt-0.5" />
+                <div>
+                  <p className="text-sm font-bold text-foreground">GCash</p>
+                  <p className="text-xs text-muted-foreground">
+                    Send the exact total via GCash — staff verifies it at the
+                    booth.
+                  </p>
+                </div>
+              </Label>
+            )}
             <Label
               htmlFor="pay-booth"
               className={cn(
@@ -574,9 +706,10 @@ export function OrderDialog({
                       className="ml-1 inline h-3 w-3 align-[-2px]"
                       aria-hidden
                     />
+                    {sizesOn && sizeName ? ` · ${sizeName}` : ""}
                   </span>
                   <span>
-                    {hotQty} × {formatPeso(product.price)}
+                    {hotQty} × {formatPeso(unitPrice)}
                   </span>
                 </div>
               )}
@@ -588,16 +721,17 @@ export function OrderDialog({
                       className="ml-1 inline h-3 w-3 align-[-2px]"
                       aria-hidden
                     />
+                    {sizesOn && sizeName ? ` · ${sizeName}` : ""}
                   </span>
                   <span>
-                    {coldQty} × {formatPeso(product.price)}
+                    {coldQty} × {formatPeso(unitPrice)}
                   </span>
                 </div>
               )}
               {tempCount < 1 && (
                 <div className="flex justify-between text-muted-foreground">
                   <span>{product.name} · nothing set yet</span>
-                  <span>0 × {formatPeso(product.price)}</span>
+                  <span>0 × {formatPeso(unitPrice)}</span>
                 </div>
               )}
             </>
@@ -608,9 +742,10 @@ export function OrderDialog({
                 {product.defaultTemperature
                   ? ` · ${product.defaultTemperature}`
                   : ""}
+                {sizesOn && sizeName ? ` · ${sizeName}` : ""}
               </span>
               <span>
-                {quantity} × {formatPeso(product.price)}
+                {quantity} × {formatPeso(unitPrice)}
               </span>
             </div>
           )}

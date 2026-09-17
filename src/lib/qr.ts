@@ -15,6 +15,8 @@ export interface QrOrderItem {
   q: number; // quantity
   n: string; // product name
   t: string | null; // HOT | COLD | null
+  z?: string | null; // size name (hasSizes products)
+  a?: { l: string; v: string }[]; // custom-field answers
   s: number; // subtotal (₱)
 }
 
@@ -44,6 +46,10 @@ export function buildOrderQrPayload(order: Order): string {
       q: i.quantity,
       n: i.productName,
       t: i.temperature,
+      ...(i.size ? { z: i.size } : {}),
+      ...((i.answers ?? []).length > 0
+        ? { a: (i.answers ?? []).map((a) => ({ l: a.label, v: a.value })) }
+        : {}),
       s: i.subtotal,
     })),
     total: order.total,

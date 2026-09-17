@@ -85,7 +85,9 @@ export function ProductCard({
         )}
         <div className="mt-auto flex items-center justify-between pt-2">
           <span className="font-display text-lg font-bold text-foreground">
-            {formatPeso(product.price)}
+            {product.hasSizes && (product.sizes?.length ?? 0) > 0
+              ? `From ${formatPeso(Math.min(...product.sizes.map((s) => s.price)))}`
+              : formatPeso(product.price)}
           </span>
           <AvailabilityBadge soldOut={soldOut} />
         </div>

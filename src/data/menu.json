@@ -1,24 +1,38 @@
 {
-  "version": 2,
+  "version": 5,
   "booth": {
     "boothName": "Coffee++",
-    "startDate": "2026-09-22T00:00:00.000Z",
+    "startDate": "2026-09-16T00:00:00.000Z",
     "endDate": "2026-09-24T09:30:00.000Z",
-    "gcashNumber": "0917 123 4567",
-    "specsNumber": "09123456789",
+    "gcashNumber": "",
+    "gcashPayment": false,
+    "specsNumber": "",
     "contactEmail": "parsu.specs@gmail.com"
   },
   "products": [
     {
       "id": "CF-001",
       "name": "Classic Coffee",
-      "description": "Freshly brewed bold coffee, hot or over ice.\n\nPromo:\nGet a FREE photobooth session for every 5 coffee orders",
+      "description": "Freshly brewed bold coffee, hot or over ice.",
       "price": 25,
       "image": "/images/products/ClassicCoffee.jpg",
       "available": true,
       "hasTemperature": true,
-      "category": "Drinks",
-      "defaultTemperature": null
+      "defaultTemperature": null,
+      "hasSizes": true,
+      "sizes": [
+        {
+          "name": "16oz",
+          "price": 25
+        },
+        {
+          "name": "22oz",
+          "price": 24
+        }
+      ],
+      "hasFields": false,
+      "fields": [],
+      "category": "Drinks"
     },
     {
       "id": "CF-002",
@@ -28,8 +42,21 @@
       "image": "/images/products/SpanishLatte.jpg",
       "available": true,
       "hasTemperature": false,
-      "category": "Drinks",
-      "defaultTemperature": "COLD"
+      "defaultTemperature": "COLD",
+      "hasSizes": true,
+      "sizes": [
+        {
+          "name": "16oz",
+          "price": 25
+        },
+        {
+          "name": "22oz",
+          "price": 24
+        }
+      ],
+      "hasFields": false,
+      "fields": [],
+      "category": "Drinks"
     },
     {
       "id": "CF-003",
@@ -39,8 +66,45 @@
       "image": "/images/products/Matcha.jpg",
       "available": true,
       "hasTemperature": false,
-      "category": "Drinks",
-      "defaultTemperature": "COLD"
+      "defaultTemperature": "COLD",
+      "hasSizes": true,
+      "sizes": [
+        {
+          "name": "16oz",
+          "price": 25
+        },
+        {
+          "name": "22oz",
+          "price": 25
+        }
+      ],
+      "hasFields": false,
+      "fields": [],
+      "category": "Drinks"
+    },
+    {
+      "id": "CF-004",
+      "name": "Dirty Matcha",
+      "description": "smooth, creamy matcha blend with a bold shot of rich espresso, creating the perfect balance of earthy sweetness and deep coffee flavor. 🍵☕",
+      "price": 25,
+      "image": "/images/products/DirtyMatcha.jpg",
+      "available": true,
+      "hasTemperature": false,
+      "defaultTemperature": "COLD",
+      "hasSizes": true,
+      "sizes": [
+        {
+          "name": "16oz",
+          "price": 25
+        },
+        {
+          "name": "22oz",
+          "price": 25
+        }
+      ],
+      "hasFields": false,
+      "fields": [],
+      "category": "Drinks"
     },
     {
       "id": "FD-001",
@@ -50,8 +114,62 @@
       "image": "/images/products/JellyFlanCake.jpg",
       "available": true,
       "hasTemperature": false,
-      "category": "Pastries",
-      "defaultTemperature": null
+      "defaultTemperature": null,
+      "hasSizes": false,
+      "sizes": [],
+      "hasFields": false,
+      "fields": [],
+      "category": "Pastries"
+    },
+    {
+      "id": "FD-002",
+      "name": "Nachos",
+      "description": "Crispy golden nachos generously coated with savory, creamy cheese powder for an irresistibly cheesy crunch in every bite. 🧀🔥",
+      "price": 25,
+      "image": "/images/products/Nachos.jpg",
+      "available": true,
+      "hasTemperature": false,
+      "defaultTemperature": null,
+      "hasSizes": false,
+      "sizes": [],
+      "hasFields": false,
+      "fields": [],
+      "category": "Pastries"
+    },
+    {
+      "id": "FD-003",
+      "name": "Churros",
+      "description": "Crispy, golden churros coated in sweet cinnamon sugar and finished with a rich, indulgent chocolate drizzle for the perfect sweet treat. 🍫✨",
+      "price": 25,
+      "image": "/images/products/Churros.jpg",
+      "available": true,
+      "hasTemperature": false,
+      "defaultTemperature": null,
+      "hasSizes": false,
+      "sizes": [],
+      "hasFields": false,
+      "fields": [],
+      "category": "Pastries"
+    },
+    {
+      "id": "KO-001",
+      "name": "Karaoke",
+      "description": "Sing your heart out and enjoy the moment with powerful sound, fun music, and two microphones made for unforgettable duets. 🎤🎶",
+      "price": 5,
+      "image": "/images/products/Karaoke.jpg",
+      "available": true,
+      "hasTemperature": false,
+      "defaultTemperature": null,
+      "hasSizes": false,
+      "sizes": [],
+      "hasFields": true,
+      "fields": [
+        {
+          "label": "Song name",
+          "required": false
+        }
+      ],
+      "category": "Extras"
     },
     {
       "id": "PB-001",
@@ -59,10 +177,14 @@
       "description": "One photo-booth session with instant printed strip.",
       "price": 50,
       "image": "/images/products/Photobooth.jpg",
-      "available": true,
+      "available": false,
       "hasTemperature": false,
-      "category": "Extras",
-      "defaultTemperature": null
+      "defaultTemperature": null,
+      "hasSizes": false,
+      "sizes": [],
+      "hasFields": false,
+      "fields": [],
+      "category": "Extras"
     },
     {
       "id": "PR-001",
@@ -70,10 +192,14 @@
       "description": "5 Coffee orders = Free Photobooth session",
       "price": 125,
       "image": "/images/products/Promo.jpg",
-      "available": true,
+      "available": false,
       "hasTemperature": true,
-      "category": "Extras",
-      "defaultTemperature": null
+      "defaultTemperature": null,
+      "hasSizes": false,
+      "sizes": [],
+      "hasFields": false,
+      "fields": [],
+      "category": "Extras"
     }
   ]
 }

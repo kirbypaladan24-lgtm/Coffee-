@@ -92,12 +92,16 @@ export function MyOrdersSheet({
                   </p>
                   <p className="mt-1.5 line-clamp-2 text-sm text-foreground">
                     {order.items
-                      .map(
-                        (i) =>
-                          `${i.quantity}× ${i.productName}${
-                            i.temperature ? ` (${i.temperature})` : ""
-                          }`
-                      )
+                      .map((i) => {
+                        const bits = `${i.quantity}× ${i.productName}${
+                          i.temperature ? ` (${i.temperature})` : ""
+                        }${i.size ? ` [${i.size}]` : ""}`;
+                        // Orders saved before custom answers existed lack the field.
+                        const ans = (i.answers ?? [])
+                          .map((a) => `${a.label}: ${a.value}`)
+                          .join(", ");
+                        return ans ? `${bits} (${ans})` : bits;
+                      })
                       .join(", ")}
                   </p>
                   <p className="mt-2 text-xs font-bold uppercase tracking-wider text-primary">

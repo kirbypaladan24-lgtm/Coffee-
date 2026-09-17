@@ -5,10 +5,12 @@ import { ArrowDown, Coffee, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BrandMark } from "@/components/shared/brand-logo";
 import { Countdown } from "./countdown";
+import { boothDayCount } from "@/data/menu";
 import type { BoothSettings } from "@/lib/types";
 
 /** Coffee++ brand hero — typography-first, warm, quick to parse. */
 export function Hero({ settings }: { settings: BoothSettings }) {
+  const runDays = boothDayCount(settings.startDate, settings.endDate);
   return (
     <section className="relative border-b border-border/60 bg-coffee-grain">
       <div className="container mx-auto relative flex flex-col items-center gap-6 px-4 py-16 text-center sm:gap-8 sm:py-24">
@@ -20,7 +22,7 @@ export function Hero({ settings }: { settings: BoothSettings }) {
 
         <span className="inline-flex items-center gap-2 rounded-full border border-transparent bg-primary px-4 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-primary-foreground dark:border-primary/20 dark:bg-secondary dark:text-secondary-foreground">
           <Coffee className="h-3.5 w-3.5" aria-hidden />
-          SPECS Booth · 3 Days Only
+          SPECS Booth · {runDays} Day{runDays === 1 ? "" : "s"} Only
         </span>
 
         <div className="flex flex-col items-center gap-3">

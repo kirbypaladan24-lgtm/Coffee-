@@ -20,13 +20,41 @@ export interface PublicProduct {
   /** Fixed serving temp when hasTemperature is false — tells the customer
    *  what they're getting (null for non-drinks like pastries). */
   defaultTemperature?: "HOT" | "COLD" | null;
+  /** True = pick a size; each size carries its own price. */
+  hasSizes: boolean;
+  /** Size options (honored only when hasSizes is true). */
+  sizes: ProductSize[];
+  /** True = fill the product's custom inputs at order time. */
+  hasFields: boolean;
+  /** Custom inputs (honored only when hasFields is true). */
+  fields: ProductField[];
   category: string;
+}
+
+/** One size option: display name + its own peso price. */
+export interface ProductSize {
+  name: string;
+  price: number;
+}
+
+/** One custom input: what to ask + whether an answer is required. */
+export interface ProductField {
+  label: string;
+  required: boolean;
+}
+
+/** One customer answer to a custom input. */
+export interface OrderAnswer {
+  label: string;
+  value: string;
 }
 
 export interface OrderItem {
   productId: string;
   productName: string;
   temperature: Temperature | null;
+  size: string | null; // size name (hasSizes products) — null otherwise
+  answers: OrderAnswer[]; // custom-field answers — [] when none
   quantity: number;
   price: number;
   subtotal: number;
@@ -55,6 +83,7 @@ export interface BoothSettings {
   startDate: string; // ISO
   endDate: string; // ISO
   gcashNumber: string;
+  gcashPayment?: boolean; // absent (v2 files) = enabled; false hides GCash
   specsNumber: string;
   contactEmail: string; // "" hides the email row
 }

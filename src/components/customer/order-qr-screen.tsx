@@ -127,24 +127,36 @@ export function OrderQRScreen() {
               )}
             </div>
 
-            {/* Order details */}
-            <div className="space-y-1.5 border-t border-border/60 pt-4 text-sm">
-              {/* One row per line item — a Hot/Cold order can carry two lines
-                  for the same product, so the key includes the temperature. */}
-              {order.items.map((item) => (
-                <div
-                  key={`${item.productId}-${item.temperature ?? "none"}`}
-                  className="flex justify-between text-foreground"
-                >
-                  <span className="truncate pr-2">
-                    {item.quantity} × {item.productName}
-                    {item.temperature && (
-                      <span className="text-muted-foreground">
-                        {" "}
-                        · {item.temperature}
-                      </span>
-                    )}
-                  </span>
+              {/* Order details */}
+              <div className="space-y-1.5 border-t border-border/60 pt-4 text-sm">
+                {/* One row per line item — a Hot/Cold order can carry two lines
+                    for the same product, so the key includes temperature + size. */}
+                {order.items.map((item) => (
+                  <div
+                    key={`${item.productId}-${item.temperature ?? "none"}-${item.size ?? "none"}`}
+                    className="flex justify-between text-foreground"
+                  >
+                    <span className="truncate pr-2">
+                      {item.quantity} × {item.productName}
+                      {item.temperature && (
+                        <span className="text-muted-foreground">
+                          {" "}
+                          · {item.temperature}
+                        </span>
+                      )}
+                      {item.size && (
+                        <span className="text-muted-foreground">
+                          {" "}
+                          · {item.size}
+                        </span>
+                      )}
+                      {/* Orders saved before custom answers existed lack the field. */}
+                      {(item.answers ?? []).length > 0 && (
+                        <span className="block truncate text-xs text-muted-foreground">
+                          {(item.answers ?? []).map((a) => `${a.label}: ${a.value}`).join(" · ")}
+                        </span>
+                      )}
+                    </span>
                   <span className="font-semibold tabular-nums">
                     {formatPeso(item.subtotal)}
                   </span>

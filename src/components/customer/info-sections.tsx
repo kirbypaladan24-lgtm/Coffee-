@@ -41,6 +41,7 @@ export function HowToOrderSection() {
 /** Payment & contact info */
 export function PaymentContactSection() {
   const settings = boothSettings;
+  const gcashOn = settings.gcashPayment !== false;
 
   return (
     <section
@@ -51,34 +52,40 @@ export function PaymentContactSection() {
         <SectionHeading
           eyebrow="Good to Know"
           title="Payment & Contact"
-          lead="Two easy ways to pay — plus where to find us if you need anything."
+          lead={
+            gcashOn
+              ? "Two easy ways to pay — plus where to find us if you need anything."
+              : "Pay with cash at the booth — plus where to find us if you need anything."
+          }
         />
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className={gcashOn ? "grid gap-4 md:grid-cols-3" : "grid gap-4 md:grid-cols-2"}>
           {/* GCash */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-base">
-                <span className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10 text-primary">
-                  <Smartphone className="h-4 w-4" aria-hidden />
-                </span>
-                GCash
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <p className="text-muted-foreground">
-                Select <strong className="text-foreground">GCash</strong> when
-                ordering, then send the exact total to:
-              </p>
-              <p className="rounded-md border border-border bg-secondary/70 px-3 py-2 text-center font-mono text-base font-bold tracking-wider text-foreground">
-                {settings.gcashNumber}
-              </p>
-              <p className="text-xs leading-relaxed text-muted-foreground">
-                Our staff manually verifies your payment when you show your
-                Order QR — no auto-deductions, ever.
-              </p>
-            </CardContent>
-          </Card>
+          {gcashOn && (
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10 text-primary">
+                    <Smartphone className="h-4 w-4" aria-hidden />
+                  </span>
+                  GCash
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3 text-sm">
+                <p className="text-muted-foreground">
+                  Select <strong className="text-foreground">GCash</strong> when
+                  ordering, then send the exact total to:
+                </p>
+                <p className="rounded-md border border-border bg-secondary/70 px-3 py-2 text-center font-mono text-base font-bold tracking-wider text-foreground">
+                  {settings.gcashNumber}
+                </p>
+                <p className="text-xs leading-relaxed text-muted-foreground">
+                  Our staff manually verifies your payment when you show your
+                  Order QR — no auto-deductions, ever.
+                </p>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Pay at Booth */}
           <Card>

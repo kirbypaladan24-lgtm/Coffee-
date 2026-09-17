@@ -34,3 +34,28 @@ export function boothStateOf(
   if (t > new Date(settings.endDate).getTime()) return "CLOSED";
   return "OPEN";
 }
+
+/**
+ * GCash switch from the menu file — absent (v2 files) means enabled,
+ * so old exports keep working. Reads `booth.gcashPayment`.
+ */
+export function isGcashEnabled(
+  settings: BoothSettings = boothSettings
+): boolean {
+  return settings.gcashPayment !== false;
+}
+
+/**
+ * Inclusive calendar-day count of the booth run (local time), derived from
+ * the menu dates — drives the hero "N Days Only" badge, so the run length
+ * is data, never a hardcoded constant.
+ */
+export function boothDayCount(startISO: string, endISO: string): number {
+  const start = new Date(startISO);
+  const end = new Date(endISO);
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return 1;
+  start.setHours(0, 0, 0, 0);
+  end.setHours(0, 0, 0, 0);
+  const count = Math.round((end.getTime() - start.getTime()) / 86_400_000) + 1;
+  return count >= 1 ? count : 1;
+}

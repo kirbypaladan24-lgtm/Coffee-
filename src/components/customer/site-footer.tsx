@@ -24,7 +24,7 @@ export function SiteFooter() {
                 />
               </span>
               <p className="max-w-[26ch] text-xs leading-relaxed text-muted-foreground sm:max-w-none">
-                A 3-day booth project by{" "}
+                A booth project by{" "}
                 <span className="font-bold text-foreground">SPECS</span> —
                 Society of Programmers &amp; Enthusiasts in Computer Science,
                 Partido State University · est. 2024.

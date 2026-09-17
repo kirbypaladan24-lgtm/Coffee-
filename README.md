@@ -70,11 +70,47 @@ Everything the site shows comes from one local file:
 | `booth.boothName` | Brand name shown in the countdown / hero |
 | `booth.startDate` / `booth.endDate` | Countdown + when ordering is allowed (before opening the ORDER button explains the booth isn't open yet; after closing, ordering is disabled) |
 | `booth.gcashNumber` | GCash number shown at checkout and in Payment & Contact |
+| `booth.gcashPayment` | `true` = GCash offered, `false` = Pay at Booth only (GCash hidden at checkout and in Payment & Contact) |
 | `booth.specsNumber` | Booth contact number |
 | `booth.contactEmail` | Booth contact email (tap-to-email link; empty string hides it) |
-| `products[]` | id, name, description, price, image, category, `available` (false = SOLD OUT), `hasTemperature` (HOT / COLD choice) |
+| `products[]` | id, name, description, price, image, category, `available` (false = SOLD OUT), `hasTemperature` (HOT / COLD choice), `hasSizes` + `sizes` (size choices with own prices — see below) |
 
 Edit the file → redeploy. That's the whole workflow.
+
+**Size choices:** give a product `"hasSizes": true` plus a `sizes` list and
+customers must pick one (each size has its own price):
+
+```json
+{
+  "id": "CF-001",
+  "price": 25,
+  "hasSizes": true,
+  "sizes": [
+    { "name": "Regular", "price": 25 },
+    { "name": "Large", "price": 35 }
+  ]
+}
+```
+
+With `"hasSizes": false` (or no `sizes`) the product behaves exactly as
+before — any `sizes` present are ignored, and the base `price` is used.
+
+**Custom inputs:** give a product `"hasFields": true` plus a `fields` list
+and customers fill them in at order time (answers ride inside the Order QR):
+
+```json
+{
+  "id": "FD-001",
+  "hasFields": true,
+  "fields": [
+    { "label": "Dedication", "required": false },
+    { "label": "Sugar level", "required": true }
+  ]
+}
+```
+
+Up to 4 inputs per product. With `"hasFields": false` (or no `fields`)
+no inputs are shown and any answers present are ignored.
 
 **Preferred workflow when you run the Booth Console:** open the console's
 **Settings → Client site menu → Export coffeepp-menu.json**, replace
