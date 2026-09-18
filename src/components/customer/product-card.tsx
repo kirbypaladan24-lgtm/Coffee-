@@ -13,9 +13,12 @@ import { cn } from "@/lib/utils";
 /** Product card — image → name → ID → description → price → availability → order. */
 export function ProductCard({
   product,
+  orderingEnabled = true,
   onOrder,
 }: {
   product: PublicProduct;
+  /** False = menu-only mode: the Order button becomes a counter note. */
+  orderingEnabled?: boolean;
   onOrder: (product: PublicProduct) => void;
 }) {
   const soldOut = !product.available;
@@ -94,14 +97,20 @@ export function ProductCard({
       </CardContent>
 
       <CardFooter className="p-3 pt-0 sm:p-4 sm:pt-0">
-        <Button
-          className="h-10 w-full font-bold"
-          disabled={soldOut}
-          onClick={() => onOrder(product)}
-          aria-label={`Order ${product.name}`}
-        >
-          {soldOut ? "Unavailable" : "Order"}
-        </Button>
+        {orderingEnabled ? (
+          <Button
+            className="h-10 w-full font-bold"
+            disabled={soldOut}
+            onClick={() => onOrder(product)}
+            aria-label={`Order ${product.name}`}
+          >
+            {soldOut ? "Unavailable" : "Order"}
+          </Button>
+        ) : (
+          <p className="w-full py-2 text-center text-xs font-semibold text-muted-foreground">
+            {soldOut ? "Unavailable" : "Order at the booth counter"}
+          </p>
+        )}
       </CardFooter>
     </Card>
   );

@@ -18,7 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useCoffeeStore } from "@/lib/store";
 import { generateOrderCode } from "@/lib/order-code";
 import { formatPeso } from "@/lib/format";
-import { boothStateOf, boothSettings, isGcashEnabled } from "@/data/menu";
+import { boothStateOf, boothSettings, isGcashEnabled, isOrderingEnabled } from "@/data/menu";
 import type {
   BoothState,
   Order,
@@ -102,6 +102,24 @@ export function OrderDialog({
   }, [open, product?.id]);
 
   if (!product) return null;
+
+  // Menu-only mode (ordering switched off mid-session) — the dialog can
+  // no longer open from the menu, this covers stale open state.
+  if (!isOrderingEnabled()) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Ordering paused</DialogTitle>
+            <DialogDescription>
+              Online ordering is paused right now — walk up to the booth
+              counter to order.
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   const soldOut = !product.available;
   const hasTemp = product.hasTemperature;

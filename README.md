@@ -71,6 +71,7 @@ Everything the site shows comes from one local file:
 | `booth.startDate` / `booth.endDate` | Countdown + when ordering is allowed (before opening the ORDER button explains the booth isn't open yet; after closing, ordering is disabled) |
 | `booth.gcashNumber` | GCash number shown at checkout and in Payment & Contact |
 | `booth.gcashPayment` | `true` = GCash offered, `false` = Pay at Booth only (GCash hidden at checkout and in Payment & Contact) |
+| `booth.orderingEnabled` | `true` = full ordering (details + Order QR), `false` = menu-only site, no order flow |
 | `booth.specsNumber` | Booth contact number |
 | `booth.contactEmail` | Booth contact email (tap-to-email link; empty string hides it) |
 | `products[]` | id, name, description, price, image, category, `available` (false = SOLD OUT), `hasTemperature` (HOT / COLD choice), `hasSizes` + `sizes` (size choices with own prices — see below) |

@@ -84,6 +84,7 @@ export interface BoothSettings {
   endDate: string; // ISO
   gcashNumber: string;
   gcashPayment?: boolean; // absent (v2 files) = enabled; false hides GCash
+  orderingEnabled?: boolean; // absent (pre-v6 files) = enabled; false = menu only
   specsNumber: string;
   contactEmail: string; // "" hides the email row
 }

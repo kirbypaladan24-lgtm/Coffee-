@@ -5,7 +5,7 @@ import { SectionHeading } from "@/components/shared/section-heading";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ProductCard } from "./product-card";
 import { OrderDialog } from "./order-dialog";
-import { menuProducts } from "@/data/menu";
+import { isOrderingEnabled, menuProducts } from "@/data/menu";
 import type { PublicProduct } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +16,9 @@ export function MenuSection() {
   );
 
   const products = menuProducts;
+  // Ordering switch from menu.json — off turns the whole section into a
+  // browse-only menu (no order dialog can open).
+  const orderingOn = isOrderingEnabled();
   const categories = React.useMemo(() => {
     const set = new Set(products.map((p) => p.category));
     return ["All", ...Array.from(set)];
@@ -31,7 +34,11 @@ export function MenuSection() {
       <SectionHeading
         eyebrow="The Menu"
         title="Brewed Fresh, Priced Fair"
-        lead="Everything is prepared on the spot by the Coffee++ team. Drinks marked Hot / Cold get separate hot and cold counts — mix them in one order."
+        lead={
+          orderingOn
+            ? "Everything is prepared on the spot by the Coffee++ team. Drinks marked Hot / Cold get separate hot and cold counts — mix them in one order."
+            : "Browse the menu below — online ordering is paused right now, so walk up to the booth counter to order."
+        }
       />
 
       {/* Category filter */}
@@ -70,7 +77,10 @@ export function MenuSection() {
             <ProductCard
               key={product.id}
               product={product}
-              onOrder={setOrderProduct}
+              orderingEnabled={orderingOn}
+              onOrder={(p) => {
+                if (orderingOn) setOrderProduct(p);
+              }}
             />
           ))}
         </div>

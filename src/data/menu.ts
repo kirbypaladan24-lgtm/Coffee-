@@ -46,6 +46,16 @@ export function isGcashEnabled(
 }
 
 /**
+ * Ordering switch from the menu file — absent (pre-v6 files) means
+ * enabled. When false the site is a menu only: no order form, no QR.
+ */
+export function isOrderingEnabled(
+  settings: BoothSettings = boothSettings
+): boolean {
+  return settings.orderingEnabled !== false;
+}
+
+/**
  * Inclusive calendar-day count of the booth run (local time), derived from
  * the menu dates — drives the hero "N Days Only" badge, so the run length
  * is data, never a hardcoded constant.

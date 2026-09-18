@@ -1,5 +1,5 @@
-﻿{
-  "version": 5,
+{
+  "version": 6,
   "booth": {
     "boothName": "Coffee++",
     "startDate": "2026-09-22T00:00:00.000Z",
@@ -7,7 +7,8 @@
     "gcashNumber": "",
     "gcashPayment": false,
     "specsNumber": "",
-    "contactEmail": "parsu.specs@gmail.com"
+    "contactEmail": "parsu.specs@gmail.com",
+    "orderingEnabled": true
   },
   "products": [
     {
