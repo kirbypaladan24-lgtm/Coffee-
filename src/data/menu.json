@@ -1,4 +1,4 @@
-{
+﻿{
   "version": 6,
   "booth": {
     "boothName": "Coffee++",
@@ -8,7 +8,7 @@
     "gcashPayment": false,
     "specsNumber": "",
     "contactEmail": "parsu.specs@gmail.com",
-    "orderingEnabled": true
+    "orderingEnabled": false
   },
   "products": [
     {
