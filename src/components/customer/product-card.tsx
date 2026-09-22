@@ -108,7 +108,7 @@ export function ProductCard({
           </Button>
         ) : (
           <p className="w-full py-2 text-center text-xs font-semibold text-muted-foreground">
-            {soldOut ? "Unavailable" : "Order at the booth counter"}
+            {soldOut ? "Unavailable" : ""}
           </p>
         )}
       </CardFooter>
