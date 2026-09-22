@@ -1,4 +1,4 @@
-{
+﻿{
   "version": 6,
   "booth": {
     "boothName": "Coffee++",
@@ -113,7 +113,7 @@
       "description": "A delicious layered dessert combining creamy leche flan, soft cake, and a smooth, vibrant color jelly topping. Sweet, creamy, and refreshing in every bite!",
       "price": 15,
       "image": "/images/products/JellyFlanCake.jpg",
-      "available": true,
+      "available": false,
       "hasTemperature": false,
       "defaultTemperature": null,
       "hasSizes": false,
