@@ -1,4 +1,4 @@
-﻿{
+{
   "version": 6,
   "booth": {
     "boothName": "Coffee++",
@@ -6,29 +6,29 @@
     "endDate": "2026-09-24T09:30:00.000Z",
     "gcashNumber": "",
     "gcashPayment": false,
+    "orderingEnabled": true,
     "specsNumber": "",
-    "contactEmail": "parsu.specs@gmail.com",
-    "orderingEnabled": true
+    "contactEmail": "parsu.specs@gmail.com"
   },
   "products": [
     {
       "id": "CF-001",
       "name": "Classic Coffee",
-      "description": "Freshly brewed bold coffee, hot or over ice.",
-      "price": 25,
+      "description": "Freshly brewed bold coffee, hot or over ice.\n\nPromo:\nGet a FREE photobooth session for every 5 coffee orders",
+      "price": 29,
       "image": "/images/products/ClassicCoffee.jpg",
       "available": true,
-      "hasTemperature": true,
+      "hasTemperature": false,
       "defaultTemperature": null,
       "hasSizes": true,
       "sizes": [
         {
           "name": "16oz",
-          "price": 25
+          "price": 29
         },
         {
           "name": "22oz",
-          "price": 24
+          "price": 39
         }
       ],
       "hasFields": false,
@@ -39,7 +39,7 @@
       "id": "CF-002",
       "name": "Spanish Latte",
       "description": "Creamy espresso with condensed milk, served hot or iced.",
-      "price": 35,
+      "price": 39,
       "image": "/images/products/SpanishLatte.jpg",
       "available": true,
       "hasTemperature": false,
@@ -48,11 +48,11 @@
       "sizes": [
         {
           "name": "16oz",
-          "price": 25
+          "price": 39
         },
         {
           "name": "22oz",
-          "price": 24
+          "price": 49
         }
       ],
       "hasFields": false,
@@ -63,7 +63,7 @@
       "id": "CF-003",
       "name": "Matcha",
       "description": "Smooth ceremonial-grade matcha with milk, hot or iced.",
-      "price": 35,
+      "price": 45,
       "image": "/images/products/Matcha.jpg",
       "available": true,
       "hasTemperature": false,
@@ -72,11 +72,11 @@
       "sizes": [
         {
           "name": "16oz",
-          "price": 25
+          "price": 45
         },
         {
           "name": "22oz",
-          "price": 25
+          "price": 55
         }
       ],
       "hasFields": false,
@@ -89,7 +89,7 @@
       "description": "smooth, creamy matcha blend with a bold shot of rich espresso, creating the perfect balance of earthy sweetness and deep coffee flavor. 🍵☕",
       "price": 25,
       "image": "/images/products/DirtyMatcha.jpg",
-      "available": true,
+      "available": false,
       "hasTemperature": false,
       "defaultTemperature": "COLD",
       "hasSizes": true,
@@ -126,9 +126,9 @@
       "id": "FD-002",
       "name": "Nachos",
       "description": "Crispy golden nachos generously coated with savory, creamy cheese powder for an irresistibly cheesy crunch in every bite. 🧀🔥",
-      "price": 25,
+      "price": 50,
       "image": "/images/products/Nachos.jpg",
-      "available": true,
+      "available": false,
       "hasTemperature": false,
       "defaultTemperature": null,
       "hasSizes": false,
@@ -141,15 +141,35 @@
       "id": "FD-003",
       "name": "Churros",
       "description": "Crispy, golden churros coated in sweet cinnamon sugar and finished with a rich, indulgent chocolate drizzle for the perfect sweet treat. 🍫✨",
-      "price": 25,
+      "price": 30,
       "image": "/images/products/Churros.jpg",
-      "available": true,
+      "available": false,
       "hasTemperature": false,
       "defaultTemperature": null,
       "hasSizes": false,
       "sizes": [],
       "hasFields": false,
       "fields": [],
+      "category": "Pastries"
+    },
+    {
+      "id": "FD-004",
+      "name": "Fries",
+      "description": "Flavor:\nCheese\nSour cream\nBBQ",
+      "price": 30,
+      "image": "/images/products/Fries.jpg",
+      "available": true,
+      "hasTemperature": false,
+      "defaultTemperature": null,
+      "hasSizes": false,
+      "sizes": [],
+      "hasFields": true,
+      "fields": [
+        {
+          "label": "Flavor",
+          "required": true
+        }
+      ],
       "category": "Pastries"
     },
     {
