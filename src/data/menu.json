@@ -87,20 +87,20 @@
       "id": "CF-004",
       "name": "Dirty Matcha",
       "description": "smooth, creamy matcha blend with a bold shot of rich espresso, creating the perfect balance of earthy sweetness and deep coffee flavor. 🍵☕",
-      "price": 25,
+      "price": 65,
       "image": "/images/products/DirtyMatcha.jpg",
-      "available": false,
+      "available": true,
       "hasTemperature": false,
       "defaultTemperature": "COLD",
       "hasSizes": true,
       "sizes": [
         {
           "name": "16oz",
-          "price": 25
+          "price": 65
         },
         {
           "name": "22oz",
-          "price": 25
+          "price": 75
         }
       ],
       "hasFields": false,
@@ -128,7 +128,7 @@
       "description": "Crispy golden nachos generously coated with savory, creamy cheese powder for an irresistibly cheesy crunch in every bite. 🧀🔥",
       "price": 50,
       "image": "/images/products/Nachos.jpg",
-      "available": false,
+      "available": true,
       "hasTemperature": false,
       "defaultTemperature": null,
       "hasSizes": false,
@@ -156,13 +156,18 @@
       "id": "FD-004",
       "name": "Fries",
       "description": "Flavor:\nCheese\nSour cream\nBBQ",
-      "price": 30,
+      "price": 25,
       "image": "/images/products/Fries.jpg",
       "available": true,
       "hasTemperature": false,
       "defaultTemperature": null,
-      "hasSizes": false,
-      "sizes": [],
+      "hasSizes": true,
+      "sizes": [
+        {
+          "name": "Small",
+          "price": 25
+        }
+      ],
       "hasFields": true,
       "fields": [
         {
