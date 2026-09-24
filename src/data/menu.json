@@ -1,4 +1,4 @@
-{
+﻿{
   "version": 6,
   "booth": {
     "boothName": "Coffee++",
@@ -133,8 +133,13 @@
       "defaultTemperature": null,
       "hasSizes": false,
       "sizes": [],
-      "hasFields": false,
-      "fields": [],
+      "hasFields": true,
+      "fields": [
+        {
+          "label": "Song name",
+          "required": false
+        }
+      ],
       "category": "Pastries"
     },
     {
@@ -183,7 +188,7 @@
       "description": "Sing your heart out and enjoy the moment with powerful sound, fun music, and two microphones made for unforgettable duets. 🎤🎶",
       "price": 5,
       "image": "/images/products/Karaoke.jpg",
-      "available": true,
+      "available": false,
       "hasTemperature": false,
       "defaultTemperature": null,
       "hasSizes": false,
