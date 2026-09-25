@@ -113,6 +113,12 @@ and customers fill them in at order time (answers ride inside the Order QR):
 Up to 4 inputs per product. With `"hasFields": false` (or no `fields`)
 no inputs are shown and any answers present are ignored.
 
+**Multi-copy booking:** a field product *without* a Hot/Cold choice books
+N copies with one answer set each (karaoke-style — e.g. 3 songs, 3 Song
+name boxes), written as one quantity-1 line per copy so every system
+reads them exactly like the karaoke app's export. Field products *with* a
+temperature choice keep one shared answer set across their HOT/COLD lines.
+
 **Preferred workflow when you run the Booth Console:** open the console's
 **Settings → Client site menu → Export coffeepp-menu.json**, replace
 `src/data/menu.json` with the downloaded file, and redeploy this site. Prices,

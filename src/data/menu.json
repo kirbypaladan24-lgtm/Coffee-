@@ -1,9 +1,9 @@
-﻿{
+{
   "version": 6,
   "booth": {
     "boothName": "Coffee++",
     "startDate": "2026-09-22T00:00:00.000Z",
-    "endDate": "2026-09-24T09:30:00.000Z",
+    "endDate": "2026-09-26T09:30:00.000Z",
     "gcashNumber": "",
     "gcashPayment": false,
     "orderingEnabled": true,
@@ -188,7 +188,7 @@
       "description": "Sing your heart out and enjoy the moment with powerful sound, fun music, and two microphones made for unforgettable duets. 🎤🎶",
       "price": 5,
       "image": "/images/products/Karaoke.jpg",
-      "available": false,
+      "available": true,
       "hasTemperature": false,
       "defaultTemperature": null,
       "hasSizes": false,

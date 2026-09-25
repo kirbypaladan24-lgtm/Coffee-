@@ -57,7 +57,10 @@ export function OrderDialog({
   const [paymentMethod, setPaymentMethod] =
     React.useState<PaymentMethod>("GCASH");
   const [sizeName, setSizeName] = React.useState("");
-  const [answers, setAnswers] = React.useState<Record<string, string>>({});
+  // One answer set per copy (karaoke-style booking). The temp path shares
+  // the first set — see `answers` below.
+  const [answerSets, setAnswerSets] = React.useState<Record<string, string>[]>([{}]);
+  const [copies, setCopies] = React.useState(1);
 
   // GCash switch from menu.json — when off, GCash is hidden and BOOTH wins.
   const gcashOn = isGcashEnabled(boothSettings);
@@ -76,12 +79,48 @@ export function OrderDialog({
 
   // Custom inputs — honored only while the product's flag is on with entries.
   const fieldsOn = !!product?.hasFields && (product?.fields?.length ?? 0) > 0;
+  // Multi-copy booking (karaoke-style): field products WITHOUT a
+  // temperature choice book N copies with one answer set each — the same
+  // shape the karaoke app exports, so imports stay identical. Temp
+  // products keep one shared answer set across their HOT/COLD lines.
+  const copiesOn = fieldsOn && !product?.hasTemperature;
+  const answers = answerSets[0] ?? {};
+  function setAnswers(
+    next:
+      | Record<string, string>
+      | ((prev: Record<string, string>) => Record<string, string>)
+  ) {
+    setAnswerSets((prev) => {
+      const cur = prev[0] ?? {};
+      const resolved = typeof next === "function" ? next(cur) : next;
+      const out = [...prev];
+      out[0] = resolved;
+      return out;
+    });
+  }
+  function copyMissing(idx: number): boolean {
+    if (!product || !fieldsOn) return false;
+    const set = answerSets[idx] ?? {};
+    return (product.fields ?? []).some(
+      (f) => f.required && (set[f.label] ?? "").trim() === ""
+    );
+  }
   const fieldsMissing =
     product && fieldsOn
-      ? (product.fields ?? []).some(
-          (f) => f.required && (answers[f.label] ?? "").trim() === ""
-        )
+      ? copiesOn
+        ? Array.from({ length: copies }, (_, i) => i).some(copyMissing)
+        : (product.fields ?? []).some(
+            (f) => f.required && (answers[f.label] ?? "").trim() === ""
+          )
       : false;
+
+  function changeCopies(n: number) {
+    const clamped = Math.max(1, Math.min(10, n));
+    setCopies(clamped);
+    setAnswerSets((prev) =>
+      Array.from({ length: clamped }, (_, i) => prev[i] ?? {})
+    );
+  }
 
   // Reset form whenever a new product opens the dialog
   React.useEffect(() => {
@@ -97,7 +136,8 @@ export function OrderDialog({
       setEmailError(null);
       setPaymentMethod(isGcashEnabled(boothSettings) ? "GCASH" : "BOOTH");
       setSizeName("");
-      setAnswers({});
+      setCopies(1);
+      setAnswerSets([{}]);
     }
   }, [open, product?.id]);
 
@@ -124,7 +164,8 @@ export function OrderDialog({
   const soldOut = !product.available;
   const hasTemp = product.hasTemperature;
   const tempCount = hotQty + coldQty;
-  const total = hasTemp ? unitPrice * tempCount : unitPrice * quantity;
+  const unitCount = copiesOn ? copies : hasTemp ? tempCount : quantity;
+  const total = unitPrice * unitCount;
 
   function applyOrder() {
     // Guard: a temperature-choice product needs at least one drink set,
@@ -162,12 +203,18 @@ export function OrderDialog({
 
   /** The order is created entirely on this device — no server involved. */
   function createOrder(alias: string, name: string, email: string) {
-    // Snapshot this product's custom-field answers onto every line.
-    const answerTag = fieldsOn
-      ? (product!.fields ?? [])
-          .map((f) => ({ label: f.label, value: (answers[f.label] ?? "").slice(0, 100) }))
-          .filter((a) => a.value.trim() !== "")
-      : [];
+    // Snapshot one answer set per line. Multi-copy mode writes one
+    // quantity-1 line per copy (karaoke shape); otherwise one shared set
+    // rides every line (temp split or single line).
+    const answerFor = (idx: number) =>
+      fieldsOn
+        ? (product!.fields ?? [])
+            .map((f) => ({
+              label: f.label,
+              value: ((copiesOn ? (answerSets[idx] ?? {}) : answers)[f.label] ?? "").slice(0, 100),
+            }))
+            .filter((a) => a.value.trim() !== "")
+        : [];
     const order: Order = {
       orderId: generateOrderCode(),
       customerName: name.slice(0, 40),
@@ -175,9 +222,10 @@ export function OrderDialog({
       customerEmail: email.toLowerCase().slice(0, 120),
       // Temperature products → one line per temperature with its own count
       // (2 HOT + 1 COLD becomes two items — every system reads them as
-      // separate lines). Fixed-temp / no-temp products keep a single line
-      // carrying the product's fixed serving temp. Every line carries the
-      // chosen size (priced at the size's own price).
+      // separate lines). Multi-copy field products → one quantity-1 line
+      // per copy, each with its own answers (karaoke shape). Anything
+      // else → a single line carrying the fixed serving temp. Every line
+      // carries the chosen size (priced at the size's own price).
       items: product!.hasTemperature
         ? (
             [
@@ -186,7 +234,7 @@ export function OrderDialog({
                 productName: product!.name,
                 temperature: "HOT" as const,
                 size: sizesOn ? sizeName : null,
-                answers: answerTag,
+                answers: answerFor(0),
                 quantity: hotQty,
                 price: unitPrice,
                 subtotal: unitPrice * hotQty,
@@ -196,27 +244,38 @@ export function OrderDialog({
                 productName: product!.name,
                 temperature: "COLD" as const,
                 size: sizesOn ? sizeName : null,
-                answers: answerTag,
+                answers: answerFor(0),
                 quantity: coldQty,
                 price: unitPrice,
                 subtotal: unitPrice * coldQty,
               },
             ] as const
           ).filter((i): i is Exclude<typeof i, false> => i !== false)
-        : [
-            {
+        : copiesOn
+          ? Array.from({ length: copies }, (_, c) => ({
               productId: product!.id,
               productName: product!.name,
-              // The product's fixed serving temp — so the booth knows what
-              // the customer is getting.
               temperature: product!.defaultTemperature ?? null,
               size: sizesOn ? sizeName : null,
-              answers: answerTag,
-              quantity,
+              answers: answerFor(c),
+              quantity: 1,
               price: unitPrice,
-              subtotal: unitPrice * quantity,
-            },
-          ],
+              subtotal: unitPrice,
+            }))
+          : [
+              {
+                productId: product!.id,
+                productName: product!.name,
+                // The product's fixed serving temp — so the booth knows what
+                // the customer is getting.
+                temperature: product!.defaultTemperature ?? null,
+                size: sizesOn ? sizeName : null,
+                answers: answerFor(0),
+                quantity,
+                price: unitPrice,
+                subtotal: unitPrice * quantity,
+              },
+            ],
       total,
       paymentMethod: gcashOn ? paymentMethod : "BOOTH",
       paymentStatus: "UNPAID",
@@ -360,8 +419,9 @@ export function OrderDialog({
           </div>
         )}
 
-        {/* Custom inputs — answers ride inside the Order QR with the order. */}
-        {fieldsOn && (
+        {/* Custom inputs — answers ride inside the Order QR with the order.
+            Multi-copy mode renders one group per copy (karaoke-style). */}
+        {fieldsOn && !copiesOn && (
           <div className="space-y-2">
             <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
               Extra details
@@ -395,6 +455,53 @@ export function OrderDialog({
                 Fill the required inputs first.
               </p>
             )}
+          </div>
+        )}
+        {fieldsOn && copiesOn && (
+          <div className="space-y-3">
+            <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              Extra details — one set per copy
+            </Label>
+            {Array.from({ length: copies }, (_, c) => (
+              <div key={c} className="space-y-2 rounded-lg border p-3">
+                <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Copy {c + 1} of {copies}
+                </p>
+                {(product.fields ?? []).map((f) => (
+                  <div key={f.label} className="space-y-1">
+                    <Label htmlFor={`order-field-${c}-${f.label}`} className="text-sm">
+                      {f.label}{" "}
+                      {f.required ? (
+                        <span className="text-destructive">*</span>
+                      ) : (
+                        <span className="text-xs font-normal text-muted-foreground">
+                          (optional)
+                        </span>
+                      )}
+                    </Label>
+                    <Input
+                      id={`order-field-${c}-${f.label}`}
+                      value={answerSets[c]?.[f.label] ?? ""}
+                      onChange={(e) =>
+                        setAnswerSets((prev) => {
+                          const out = [...prev];
+                          out[c] = { ...(out[c] ?? {}), [f.label]: e.target.value };
+                          return out;
+                        })
+                      }
+                      maxLength={100}
+                      placeholder={f.label}
+                      autoComplete="off"
+                    />
+                  </div>
+                ))}
+                {copyMissing(c) && (
+                  <p className="text-xs font-medium text-destructive" role="alert">
+                    Fill the required inputs for copy {c + 1} first.
+                  </p>
+                )}
+              </div>
+            ))}
           </div>
         )}
 
@@ -509,11 +616,13 @@ export function OrderDialog({
           </div>
         )}
 
-        {/* Quantity — only for items WITHOUT a temperature choice */}
+        {/* Quantity — copies with per-copy answers for multi-copy field
+            products (karaoke-style), plain quantity otherwise. Neither
+            shows for temperature-choice items (they use the steppers). */}
         {!product.hasTemperature && (
           <div className="space-y-2">
             <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-              Quantity
+              {copiesOn ? "How many? — one answer set each" : "Quantity"}
             </Label>
             <div className="flex h-11 items-center justify-between rounded-md border border-input bg-background px-1.5">
               <Button
@@ -521,9 +630,13 @@ export function OrderDialog({
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8"
-                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                disabled={quantity <= 1}
-                aria-label="Decrease quantity"
+                onClick={() =>
+                  copiesOn
+                    ? changeCopies(copies - 1)
+                    : setQuantity((q) => Math.max(1, q - 1))
+                }
+                disabled={copiesOn ? copies <= 1 : quantity <= 1}
+                aria-label={copiesOn ? "Fewer copies" : "Decrease quantity"}
               >
                 <Minus className="h-4 w-4" aria-hidden />
               </Button>
@@ -531,15 +644,17 @@ export function OrderDialog({
                 className="min-w-10 text-center text-base font-bold tabular-nums"
                 aria-live="polite"
               >
-                {quantity}
+                {copiesOn ? copies : quantity}
               </span>
               <Button
                 type="button"
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8"
-                onClick={() => setQuantity((q) => q + 1)}
-                aria-label="Increase quantity"
+                onClick={() =>
+                  copiesOn ? changeCopies(copies + 1) : setQuantity((q) => q + 1)
+                }
+                aria-label={copiesOn ? "More copies" : "Increase quantity"}
               >
                 <Plus className="h-4 w-4" aria-hidden />
               </Button>
@@ -752,6 +867,24 @@ export function OrderDialog({
                   <span>0 × {formatPeso(unitPrice)}</span>
                 </div>
               )}
+            </>
+          ) : copiesOn ? (
+            <>
+              {Array.from({ length: copies }, (_, c) => {
+                const firstAnswer = Object.values(answerSets[c] ?? {}).find(
+                  (v) => v.trim() !== ""
+                );
+                return (
+                  <div key={c} className="flex justify-between text-muted-foreground">
+                    <span>
+                      {product.name} · copy {c + 1}
+                      {sizesOn && sizeName ? ` · ${sizeName}` : ""}
+                      {firstAnswer ? ` · ${firstAnswer}` : ""}
+                    </span>
+                    <span>1 × {formatPeso(unitPrice)}</span>
+                  </div>
+                );
+              })}
             </>
           ) : (
             <div className="flex justify-between text-muted-foreground">
